@@ -663,7 +663,62 @@ dtb-$(CONFIG_MACH_SUN50I_H5) += \
 	sun50i-h5-orangepi-zero-plus.dtb \
 	sun50i-h5-orangepi-pc2.dtb \
 	sun50i-h5-orangepi-prime.dtb \
-	sun50i-h5-orangepi-zero-plus2.dtb
+	sun50i-h5-orangepi-zero-plus2.dtb \
+	sun50i-h5-repka-pi3-1ghz.dtb \
+	sun50i-h5-repka-pi3-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-1.4ghz.dtb \
+	sun50i-h5-repka-pi3-1.416ghz.dtb \
+	sun50i-h5-repka-pi3-1.464ghz.dtb \
+	sun50i-h5-repka-pi3-alt-1ghz.dtb \
+	sun50i-h5-repka-pi3-alt-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-alt-1.4ghz.dtb \
+	sun50i-h5-repka-pi3-alt-i2c2-1ghz.dtb \
+	sun50i-h5-repka-pi3-alt-i2c2-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-alt-i2c2-1.4ghz.dtb \
+	sun50i-h5-repka-pi3-alt-i2c2-v1.4.dtb \
+	sun50i-h5-repka-pi3-alt-i2c2-v1.4p.dtb \
+	sun50i-h5-repka-pi3-alt-i2c2-v1.6.dtb \
+	sun50i-h5-repka-pi3-alt-i2c2-v1.6p.dtb \
+	sun50i-h5-repka-pi3-alt-pwm-1ghz.dtb \
+	sun50i-h5-repka-pi3-alt-pwm-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-alt-pwm-1.4ghz.dtb \
+	sun50i-h5-repka-pi3-alt-pwm-v1.4.dtb \
+	sun50i-h5-repka-pi3-alt-pwm-v1.4p.dtb \
+	sun50i-h5-repka-pi3-alt-pwm-v1.6.dtb \
+	sun50i-h5-repka-pi3-alt-pwm-v1.6p.dtb \
+	sun50i-h5-repka-pi3-alt-uart-1ghz.dtb \
+	sun50i-h5-repka-pi3-alt-uart-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-alt-uart-1.4ghz.dtb \
+	sun50i-h5-repka-pi3-alt-uart-v1.4.dtb \
+	sun50i-h5-repka-pi3-alt-uart-v1.4p.dtb \
+	sun50i-h5-repka-pi3-alt-uart-v1.6.dtb \
+	sun50i-h5-repka-pi3-alt-uart-v1.6p.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-1ghz.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-1.4ghz.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-v1.4.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-v1.4p.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-v1.6.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-v1.6p.dtb \
+	sun50i-h5-repka-pi3-v1.4.dtb \
+	sun50i-h5-repka-pi3-v1.4p.dtb \
+	sun50i-h5-repka-pi3-v1.6.dtb \
+	sun50i-h5-repka-pi3-v1.6p.dtb \
+	sun50i-h5-repka-pi3-alt-v1.4.dtb \
+	sun50i-h5-repka-pi3-alt-v1.4p.dtb \
+	sun50i-h5-repka-pi3-alt-v1.6.dtb \
+	sun50i-h5-repka-pi3-alt-v1.6p.dtb \
+	sun50i-h5-repka-pi3-i2s-pcm5102-v1.6.dtb \
+	sun50i-h5-repka-pi3-i2s-pcm5102-v1.6p.dtb \
+	sun50i-h5-repka-pi3-i2s-v1.6.dtb \
+	sun50i-h5-repka-pi3-i2s-v1.6p.dtb \
+	sun50i-h5-repka-pi3-multimedia-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-multimedia-1.4ghz.dtb \
+	sun50i-h5-repka-pi3-multimedia-led-off-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-multimedia-led-off-1.4ghz.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-rtc-pcf8523-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-alt-uart-can-rtc-ds3231-1.2ghz.dtb \
+	sun50i-h5-repka-pi3-ov5640-1ghz.dtb
 dtb-$(CONFIG_MACH_SUN50I_H6) += \
 	sun50i-h6-beelink-gs1.dtb \
 	sun50i-h6-orangepi-3.dtb \
