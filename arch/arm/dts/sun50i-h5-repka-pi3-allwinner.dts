@@ -3,14 +3,19 @@
 
 /dts-v1/;
 #include "sun50i-h5.dtsi"
+#include "sun50i-h5-repka-cpu-opp-1.368ghz.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/pinctrl/sun4i-a10.h>
 
+
 / {
 	model = "Repka-Pi3-H5";
 	option = "uboot";
+	repka-freq = "1.368 GHz";
+	repka-pinout = "1";
+	repka-cooling = "1";
 	compatible = "rbs,repka-pi3", "allwinner,sun50i-h5";
 
 	reg_vcc3v3: vcc3v3 {
@@ -26,6 +31,9 @@
 		serial1 = &uart1;
 		spi0 = &spi0;
 		spi1 = &spi1;
+		i2c1 = &i2c0;
+		i2c2 = &i2c1;
+		i2c3 = &r_i2c;
 	};
 
 	chosen {
@@ -44,8 +52,8 @@
 	};
 
 	leds {
-		pinctrl-names = "default";
-				
+		compatible = "gpio-leds";
+		
 		status {
 			label = "rbs:red:status";
 			gpios = <&pio 0 20 GPIO_ACTIVE_HIGH>;
@@ -53,14 +61,226 @@
 		};
 	};
 
+	wifi_pwrseq: wifi_pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		reset-gpios = <&r_pio 0 8 GPIO_ACTIVE_LOW>; 
+		post-power-on-delay-ms = <255>;
+	};
+
+	scpi_protocol: scpi {
+		compatible = "arm,scpi";
+		mboxes = <&msgbox 2>, <&msgbox 3>;
+		mbox-names = "tx", "rx";
+		shmem = <&scpi_sram>;
+	};
+
+	sound_hdmi: sound_hdmi {
+		compatible = "allwinner,sun9i-a80-hdmi-audio", "allwinner,sun8i-h3-hdmi-audio";
+		status = "okay";
+		codec {
+			sound-dai = <&hdmi>;
+		};
+		cpu {
+			sound-dai = <&i2s2>;
+		};
+	};
+
+	///????
+	tve: tv-encoder@1e40000 {
+		compatible = "allwinner,sun50i-h5-tv-encoder";
+		reg = <0x01e40000 0x1000>;
+		clocks = <&ccu CLK_BUS_TVE>;
+		resets = <&ccu RST_BUS_TVE>;
+		status = "disabled";
+		port {
+			tve_in_tcon1: endpoint {
+				remote-endpoint = <&tcon1_out_tve>;
+			};
+		};
+	};
+
+	soc {
+		mixer1: mixer@1200000 {
+			compatible = "allwinner,sun8i-h3-de2-mixer-1";
+			reg = <0x01200000 0x100000>;
+			clocks = <&display_clocks CLK_BUS_MIXER1>, <&display_clocks CLK_MIXER1>;
+			clock-names = "bus", "mod";
+			resets = <&display_clocks RST_MIXER1>;
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				mixer1_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					/delete-node/ endpoint;
+					mixer1_out_tcon_0: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&tcon0_in_mixer_1>;
+					};
+
+					mixer1_out_tcon_1: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&tcon1_in_mixer_1>;
+					};
+				};	
+			};
+		}; //mixer1
+
+		tcon1: lcd-controller@1c0d000 {
+			compatible = "allwinner,sun8i-h3-tcon-tv", "allwinner,sun8i-a83t-tcon-tv";
+			reg = <0x01c0d000 0x1000>;
+			interrupts = <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ccu CLK_BUS_TCON1>, <&ccu CLK_TVE>;
+			clock-names = "ahb", "tcon-ch1";
+			resets = <&ccu RST_BUS_TCON1>;
+			reset-names = "lcd";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				tcon1_in: port@0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <0>;
+
+					tcon1_in_mixer_0: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&mixer0_out_tcon_1>;
+					};
+
+					tcon1_in_mixer_1: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&mixer1_out_tcon_1>;
+					};
+				};
+
+				tcon1_out: port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+
+					tcon1_out_tve: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&tve_in_tcon1>;
+					};
+				};
+			};
+		}; //tcon1i
+	}; //soc
 };
 
-&codec {
-	allwinner,audio-routing =
-		"Line Out", "LINEOUT",
-		"MIC1", "Mic",
-		"Mic",  "MBIAS";
+
+//
+// SYSCON
+//
+
+&syscon {
+	sram_a2: sram@40000 {
+		compatible = "mmio-sram";
+		reg = <0x00040000 0x14000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges = <0 0x00040000 0x14000>;
+		scpi_sram: scp-shmem@13c00 {
+			compatible = "arm,scp-shmem";
+			reg = <0x13c00 0x200>;
+		};
+	};
+};
+
+
+//
+// MMCx
+//
+
+&mmc0 {
+	vmmc-supply = <&reg_vcc3v3>;
+	bus-width = <4>;
+	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
 	status = "okay";
+};
+
+&mmc1 {
+	vmmc-supply = <&reg_vcc3v3>;
+	mmc-pwrseq = <&wifi_pwrseq>;
+	bus-width = <4>;
+	non-removable;
+	status = "okay";
+	brcmf: wifi@1 {
+		reg = <1>;
+		compatible = "brcm,bcm43430-fmac";
+		interrupt-parent = <&r_pio>;
+		interrupts = <0 7 IRQ_TYPE_LEVEL_LOW>;	/* PL7 */
+		interrupt-names = "host-wake";
+	};
+};
+
+&mmc2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc2_8bit_pins>;
+	vmmc-supply = <&reg_vcc3v3>;
+	bus-width = <8>;
+	non-removable;
+	cap-mmc-hw-reset;
+	status = "disabled";
+};
+
+
+//
+// EHCIx
+//
+
+&ehci0 {
+	status = "okay";
+};
+
+&ehci1 {
+	status = "okay";
+};
+
+&ehci2 {
+	status = "okay";
+};
+
+&ehci3 {
+	status = "okay";
+};
+
+
+//
+// OHCIx
+//
+
+&ohci0 {
+	status = "okay";
+};
+
+&ohci1 {
+	status = "okay";
+};
+
+&ohci2 {
+	status = "okay";
+};
+
+&ohci3 {
+	status = "okay";
+};
+
+
+//
+// CPUx
+//
+
+&cpu_thermal {
+	polling-delay-passive = <250>;
+	polling-delay = <1000>;
+};
+
+&cpu_very_hot_trip {
+	temperature = <95000>;
+	hysteresis = <2000>;
 };
 
 &cpu0 {
@@ -79,34 +299,14 @@
 	cpu-supply = <&reg_dcdc2>;
 };
 
-&de {
-	status = "okay";
-};
 
-&ehci0 {
-	status = "okay";
-};
-
-&ehci1 {
-	status = "okay";
-};
-
-&ehci2 {
-	status = "okay";
-};
-
-&ehci3 {
-	status = "okay";
-};
-
-&emac {
-	phy-handle = <&int_mii_phy>;
-	phy-mode = "mii";
-	allwinner,leds-active-low;
-	status = "okay";
-};
+//
+// HDMI
+//
 
 &hdmi {
+	#sound-dai-cells = <0>;
+	clocks = <&ccu CLK_BUS_HDMI>, <&ccu CLK_HDMI_DDC>, <&ccu CLK_HDMI>;
 	status = "okay";
 };
 
@@ -116,6 +316,98 @@
 	};
 };
 
+
+//
+// ETHERNET
+//
+
+&emac {
+	phy-handle = <&int_mii_phy>;
+	phy-mode = "mii";
+	allwinner,leds-active-low;
+	status = "okay";
+};
+
+
+//
+//
+//
+
+&tcon0_in {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	/delete-node/ endpoint;
+	tcon0_in_mixer_0: endpoint@0 {
+		reg = <0>;
+		remote-endpoint = <&mixer0_out_tcon_0>;
+	};
+					
+	tcon0_in_mixer_1: endpoint@1 {
+		reg = <1>;
+		remote-endpoint = <&mixer1_out_tcon_0>;
+	};
+};
+
+&tcon0_out {
+	#address-cells = <1>;
+	#size-cells = <0>;
+};
+
+
+&mixer0_out {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	/delete-node/ endpoint;
+	mixer0_out_tcon_0: endpoint@0 {
+		reg = <0>;
+		remote-endpoint = <&tcon0_in_mixer_0>;
+	};
+	mixer0_out_tcon_1: endpoint@1 {
+		reg = <1>;
+		remote-endpoint = <&tcon1_in_mixer_0>;
+	};
+};
+
+&csi_pins {
+	pins = "PE0", "PE1", "PE2", "PE3", "PE4", "PE5", "PE6", "PE7", "PE8", "PE9", "PE10", "PE11";
+};
+
+&mbus {
+	compatible = "allwinner,sun8i-h3-mbus";
+	reg = <0x01c62000 0x1000>;
+	clocks = <&ccu CLK_MBUS>;
+	/delete-property/ reg-names;
+	/delete-property/ clock-names;
+};
+
+&csi {
+	compatible = "allwinner,sun8i-h3-csi", "allwinner,sun6i-a31-csi";
+};
+
+&r_intc {
+	compatible = "allwinner,sun50i-a64-r-intc", "allwinner,sun6i-a31-r-intc";
+	#interrupt-cells = <2>;
+};
+
+
+//
+//
+//
+
+&codec {
+	allwinner,audio-routing =
+		"Line Out", "LINEOUT",
+		"MIC1", "Mic",
+		"Mic",  "MBIAS";
+	status = "okay";
+};
+
+
+&de {
+	allwinner,pipelines = <&mixer0>, <&mixer1>;
+	status = "okay";
+};
+
 &i2s2 {
 	status = "okay";
 };
@@ -123,34 +415,10 @@
 &ir {
 	pinctrl-names = "default";
 	pinctrl-0 = <&r_ir_rx_pin>;
-	status = "disabled";
-};
-
-&mmc0 {
-	vmmc-supply = <&reg_vcc3v3>;
-	bus-width = <4>;
-	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>; /* PF6 */
-	status = "okay";
-};
-
-&ohci0 {
-	status = "okay";
-};
-
-&ohci1 {
-	status = "okay";
-};
-
-&ohci2 {
-	status = "okay";
-};
-
-&ohci3 {
-	status = "okay";
 };
 
 &r_i2c {
-	status = "disabled";
+	status = "okay";
 
 	axp22x: pmic@34 {
 		compatible = "x-powers,axp221";
@@ -160,8 +428,120 @@
 	};
 };
 
+/*
+ * 
+ * 
+ *     ^__________^
+* 
+*
+*/
+
+&spi0 {
+	pinctrl-names = "default", "default";
+	pinctrl-1 = <&spi0_cs1>;
+	cs-gpios = <0>, <&pio 0 3 0>; /* PA3 */
+
+	status = "disabled";
+	spidev@0 {
+		compatible = "rohm,dh2228fv";  /* костыль, так как теперь"spidev" нет в драйвере ядра (spidev.c) */
+		status = "okay";
+		reg = <0>;
+		spi-max-frequency = <1000000>;
+	};
+	spidev@1 {
+		compatible = "rohm,dh2228fv";  /* костыль, так как теперь"spidev" нет в драйвере ядра (spidev.c) */
+		status = "okay";
+		reg = <1>;
+		spi-max-frequency = <1000000>;
+	};
+	
+};
+
+&spi1 {
+	pinctrl-names = "default", "default";
+        
+        status = "disabled";
+	spidev@0 {
+		compatible = "rohm,dh2228fv";
+		status = "okay";
+		reg = <0>;
+		spi-max-frequency = <1000000>;
+       };
+};
+
+&pio {
+	i2s1_pins: i2s1-pins {
+		pins = "PG10", "PG11", "PG12", "PG13";
+		function = "i2s1";
+	};
+
+	spi0_cs1: spi0_cs1 {		/* для совместимости с распбери создаем cs1 */
+		pins = "PA3";
+		function = "gpio_out";
+		output-high;
+	};
+};
+
+
+&r_pwm {
+	status = "disabled";
+};
+
+/* to debag serial */
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pa_pins>;
+	status = "okay";
+	dma-names = "rx", "tx";
+};
+
+/* to bt-wifi module */
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
+	dma-names = "rx", "tx";
+	uart-has-rtscts;
+	status = "okay";
+	bluetooth {
+		compatible = "brcm,bcm43438-bt";
+		clocks = <&rtc 1>;
+		clock-names = "lpo";
+		device-wakeup-gpios = <&r_pio 0 4 GPIO_ACTIVE_HIGH>; /* PL4 AP-WAKE-BT */
+		host-wakeup-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 BT-WAKE-AP */
+		shutdown-gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>; /* PL5 BT-RST-N */
+		max-speed = <1500000>; 
+	};
+};
+
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pins>, <&uart2_rts_cts_pins>;
+	dma-names = "rx", "tx";
+};
+
+&uart3 {
+	dma-names = "rx", "tx";
+};
+
+&usb_otg {
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usbphy {
+	status = "okay";
+};
+
+
+//
+// Power Management
+//
+
 #include "axp22x.dtsi"
 
+&ac_power_supply {
+	status = "okay";
+};
 
 &reg_aldo2 {			/* VCC-PG 1.8 */
 	regulator-always-on;
@@ -264,99 +644,8 @@
 	regulator-name = "vcc-wifi-io-3";
 };
 
-/*
- * 
- * 
- *     ^__________^
-* 
-*
-*/
-
 &reg_rtc_ldo {
 	regulator-name = "vcc-rtc";
-};
-
-&spi0 {
-	pinctrl-names = "default", "default";
-
-
-	status = "disabled";
-	spidev@0 {
-		compatible = "rohm,dh2228fv";  /* костыль, так как теперь"spidev" нет в драйвере ядра (spidev.c) */
-		status = "okay";
-		reg = <0>;
-		spi-max-frequency = <1000000>;
-		bias-disable;	
-	};
-	spidev@1 {
-		compatible = "rohm,dh2228fv";  /* костыль, так как теперь"spidev" нет в драйвере ядра (spidev.c) */
-		status = "okay";
-		reg = <1>;
-		spi-max-frequency = <1000000>;
-		bias-disable;	
-	};
-	
-};
-
-&spi1 {
-	pinctrl-names = "default", "default";
-        
-        status = "disabled";
-	spidev@0 {
-		compatible = "rohm,dh2228fv";
-		status = "okay";
-		reg = <0>;
-		spi-max-frequency = <1000000>;
-       };
-};
-
-&pio {
-		spi0_cs1: spi0_cs1 {		/* для совместимости с распбери создаем cs1 */
-			pins = "PA3";
-			function = "gpio_out";
-			output-high;
-		};
-
-};
-
-
-&r_pwm {
-	status = "disabled";
-};
-
-/* to debag serial */
-&uart0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_pa_pins>;
-	status = "okay";
-};
-
-/* to bt-wifi module */
-&uart1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart1_pins>;
-	status = "disabled";
-};
-
-&uart2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart2_pins>, <&uart2_rts_cts_pins>;   /* , <&uart2_rts_cts_pins> пересекается с spi cs1 */
-	status = "disabled";
-};
-
-&r_uart {
-	pinctrl-names = "default";
-	pinctrl-0 = <&r_uart_pins>;
-	status = "disabled";
-};
-
-&usb_otg {
-	dr_mode = "host";
-	status = "okay";
-};
-
-&usbphy {
-	status = "okay";
 };
 
 
