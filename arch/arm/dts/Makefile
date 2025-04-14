@@ -87,6 +87,8 @@ dtb-$(CONFIG_ARCH_TEGRA) += \
 	tegra20-asus-tf101g.dtb \
 	tegra20-harmony.dtb \
 	tegra20-medcom-wide.dtb \
+	tegra20-motorola-daytona.dtb \
+	tegra20-motorola-olympus.dtb \
 	tegra20-paz00.dtb \
 	tegra20-plutux.dtb \
 	tegra20-seaboard.dtb \
@@ -113,14 +115,18 @@ dtb-$(CONFIG_ARCH_TEGRA) += \
 	tegra30-lg-p880.dtb \
 	tegra30-lg-p895.dtb \
 	tegra30-microsoft-surface-rt.dtb \
+	tegra30-ouya.dtb \
 	tegra30-tec-ng.dtb \
 	tegra30-wexler-qc750.dtb \
+	tegra114-asus-tf701t.dtb \
 	tegra114-dalmore.dtb \
+	tegra114-nvidia-tegratab.dtb \
 	tegra124-apalis.dtb \
 	tegra124-jetson-tk1.dtb \
 	tegra124-nyan-big.dtb \
 	tegra124-cei-tk1-som.dtb \
 	tegra124-venice2.dtb \
+	tegra124-xiaomi-mocha.dtb \
 	tegra186-p2771-0000-000.dtb \
 	tegra186-p2771-0000-500.dtb \
 	tegra210-p2371-0000.dtb \
@@ -850,7 +856,6 @@ dtb-y += \
 	imx6q-icore-rqs.dtb \
 	imx6q-kp.dtb \
 	imx6q-logicpd.dtb \
-	imx6q-lxr.dtb \
 	imx6q-marsboard.dtb \
 	imx6q-mccmon6.dtb\
 	imx6q-nitrogen6x.dtb \
@@ -973,8 +978,7 @@ dtb-$(CONFIG_ARCH_IMX9) += \
 	imx93-var-som-symphony.dtb \
 	imx93-phyboard-segin.dtb
 
-dtb-$(CONFIG_ARCH_IMXRT) += imxrt1050-evk.dtb \
-	imxrt1020-evk.dtb \
+dtb-$(CONFIG_ARCH_IMXRT) += imxrt1020-evk.dtb \
 	imxrt1170-evk.dtb \
 
 dtb-$(CONFIG_RZA1) += \
@@ -1158,9 +1162,10 @@ dtb-$(CONFIG_SOC_K3_AM654) += \
 	k3-am654-r5-base-board.dtb
 
 dtb-$(CONFIG_SOC_K3_J721E) += k3-j721e-r5-common-proc-board.dtb \
-			      k3-j7200-r5-common-proc-board.dtb \
 			      k3-j721e-r5-sk.dtb \
 			      k3-j721e-r5-beagleboneai64.dtb
+
+dtb-$(CONFIG_SOC_K3_J7200) += k3-j7200-r5-common-proc-board.dtb
 
 dtb-$(CONFIG_SOC_K3_J721S2) += k3-am68-sk-r5-base-board.dtb\
 			       k3-j721s2-r5-common-proc-board.dtb
@@ -1168,7 +1173,8 @@ dtb-$(CONFIG_SOC_K3_J721S2) += k3-am68-sk-r5-base-board.dtb\
 dtb-$(CONFIG_SOC_K3_J784S4) += k3-am69-r5-sk.dtb \
 			       k3-j784s4-r5-evm.dtb
 
-dtb-$(CONFIG_SOC_K3_J722S) += k3-j722s-r5-evm.dtb
+dtb-$(CONFIG_SOC_K3_J722S) += k3-j722s-r5-evm.dtb \
+			      k3-am67a-r5-beagley-ai.dtb
 
 dtb-$(CONFIG_SOC_K3_AM642) += k3-am642-r5-evm.dtb \
 			      k3-am642-r5-sk.dtb \

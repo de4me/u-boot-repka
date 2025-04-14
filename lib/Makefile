@@ -28,11 +28,7 @@ obj-y += charset.o
 endif
 endif
 
-ifdef CONFIG_USB_TTY
-obj-y += circbuf.o
-else
 obj-$(CONFIG_CIRCBUF) += circbuf.o
-endif
 
 obj-y += crc8.o
 obj-$(CONFIG_ERRNO_STR) += errno_str.o
@@ -75,7 +71,7 @@ obj-y += crypto/
 
 obj-$(CONFIG_$(PHASE_)ACPI) += acpi/
 obj-$(CONFIG_ECDSA) += ecdsa/
-obj-$(CONFIG_$(XPL_)RSA) += rsa/
+obj-$(CONFIG_$(PHASE_)RSA) += rsa/
 obj-$(CONFIG_HASH) += hash-checksum.o
 obj-$(CONFIG_BLAKE2) += blake2/blake2b.o
 
@@ -86,7 +82,7 @@ obj-$(CONFIG_$(PHASE_)SHA256_LEGACY) += sha256.o
 obj-$(CONFIG_$(PHASE_)SHA512_LEGACY) += sha512.o
 
 obj-$(CONFIG_CRYPT_PW) += crypt/
-obj-$(CONFIG_$(XPL_)ASN1_DECODER_LEGACY) += asn1_decoder.o
+obj-$(CONFIG_$(PHASE_)ASN1_DECODER_LEGACY) += asn1_decoder.o
 
 obj-$(CONFIG_$(PHASE_)ZLIB) += zlib/
 obj-$(CONFIG_$(PHASE_)ZSTD) += zstd/
@@ -95,14 +91,14 @@ obj-$(CONFIG_$(PHASE_)LZO) += lzo/
 obj-$(CONFIG_$(PHASE_)LZMA) += lzma/
 obj-$(CONFIG_$(PHASE_)LZ4) += lz4_wrapper.o
 
-obj-$(CONFIG_$(XPL_)LIB_RATIONAL) += rational.o
+obj-$(CONFIG_$(PHASE_)LIB_RATIONAL) += rational.o
 
 obj-$(CONFIG_LIBAVB) += libavb/
 
 obj-$(CONFIG_$(PHASE_)OF_LIBFDT) += libfdt/
 obj-$(CONFIG_$(PHASE_)OF_REAL) += fdtdec_common.o fdtdec.o
 
-obj-$(CONFIG_$(XPL_)MBEDTLS_LIB) += mbedtls/
+obj-$(CONFIG_$(PHASE_)MBEDTLS_LIB) += mbedtls/
 
 obj-$(CONFIG_NET_LWIP) += lwip/
 
@@ -129,7 +125,7 @@ obj-y += hang.o
 obj-y += linux_compat.o
 obj-y += linux_string.o
 obj-$(CONFIG_$(PHASE_)LMB) += lmb.o
-obj-y += membuff.o
+obj-y += membuf.o
 obj-$(CONFIG_REGEX) += slre.o
 obj-y += string.o
 obj-y += tables_csum.o
@@ -154,7 +150,7 @@ else
 obj-y += vsprintf.o strto.o
 obj-$(CONFIG_SSCANF) += sscanf.o
 endif
-obj-$(CONFIG_$(XPL_)OID_REGISTRY) += oid_registry.o
+obj-$(CONFIG_$(PHASE_)OID_REGISTRY) += oid_registry.o
 
 obj-y += abuf.o
 obj-y += alist.o
