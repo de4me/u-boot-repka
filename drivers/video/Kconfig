@@ -89,14 +89,32 @@ config VIDEO_PCI_DEFAULT_FB_SIZE
 
 config VIDEO_COPY
 	bool "Enable copying the frame buffer to a hardware copy"
+	select VIDEO_DAMAGE
 	help
 	  On some machines (e.g. x86), reading from the frame buffer is very
 	  slow because it is uncached. To improve performance, this feature
 	  allows the frame buffer to be kept in cached memory (allocated by
 	  U-Boot) and then copied to the hardware frame-buffer as needed.
+	  It uses the VIDEO_DAMAGE feature to keep track of regions to copy
+	  and will only copy actually touched regions.
 
 	  To use this, your video driver must set @copy_base in
 	  struct video_uc_plat.
+
+config VIDEO_DAMAGE
+	bool "Enable damage tracking of frame buffer regions"
+	help
+	  On some machines (most ARM), the display frame buffer resides in
+	  RAM. To make the display controller pick up screen updates, we
+	  have to flush frame buffer contents from CPU caches into RAM which
+	  can be a slow operation.
+
+	  This feature adds damage tracking to collect information about regions
+	  that received updates. When we want to sync, we then only flush
+	  regions of the frame buffer that were modified before, speeding up
+	  screen refreshes significantly.
+
+	  It is also used by VIDEO_COPY to identify which regions changed.
 
 config BACKLIGHT_PWM
 	bool "Generic PWM based Backlight Driver"
@@ -495,6 +513,7 @@ config VIDEO_LCD_ANX9804
 
 config ATMEL_LCD
 	bool "Atmel LCD panel support"
+	imply VIDEO_DAMAGE
 	depends on ARCH_AT91
 
 config ATMEL_LCD_BGR555
@@ -504,6 +523,7 @@ config ATMEL_LCD_BGR555
 
 config VIDEO_BCM2835
 	bool "Display support for BCM2835"
+	imply VIDEO_DAMAGE
 	help
 	  The graphics processor already sets up the display so this driver
 	  simply checks the resolution and then sets up the frame buffer with
@@ -539,6 +559,13 @@ config VIDEO_LCD_MOT
 	  unknown. The panel has a 540x960 resolution and uses 24 bit RGB per
 	  pixel.
 
+config VIDEO_LCD_NOVATEK_NT35510
+	bool "Novatek NT35510 DSI LCD panel support"
+	select VIDEO_MIPI_DSI
+	help
+	Say Y here if you want to enable support for Novatek nt35510
+	dsi panel.
+
 config VIDEO_LCD_ORISETECH_OTM8009A
 	bool "OTM8009A DSI LCD panel support"
 	select VIDEO_MIPI_DSI
@@ -553,6 +580,14 @@ config VIDEO_LCD_LG_LD070WX3
 	help
 	  Say Y here if you want to enable support for LG LD070WX3
 	  800x1280 DSI video mode panel.
+
+config VIDEO_LCD_LG_LH400WV3
+	bool "LH400WV3-SD04 DSI LCD panel support"
+	depends on PANEL && BACKLIGHT
+	select VIDEO_MIPI_DSI
+	help
+	  Say Y here if you want to enable support for LG LH400WV3
+	  480x800 DSI video mode panel.
 
 config VIDEO_LCD_RAYDIUM_RM68200
 	bool "RM68200 DSI LCD panel support"
@@ -641,6 +676,14 @@ config VIDEO_LCD_TDO_TL070WSH30
 	Say Y here if you want to enable support for TDO TL070WSH30
 	1024x600 DSI video mode panel.
 
+config VIDEO_LCD_HITACHI_TX10D07VM0BAA
+	tristate "Hitachi TX10D07VM0BAA 480x800 MIPI DSI video mode panel"
+	depends on PANEL && BACKLIGHT
+	select VIDEO_MIPI_DSI
+	help
+	  Say Y here if you want to enable support for Hitachi TX10D07VM0BAA
+	  TFT-LCD module. The panel has a 480x800 resolution.
+
 config VIDEO_LCD_HITACHI_TX18D42VM
 	bool "Hitachi tx18d42vm LVDS LCD panel support"
 	---help---
@@ -695,6 +738,7 @@ source "drivers/video/meson/Kconfig"
 
 config VIDEO_MVEBU
 	bool "Armada XP LCD controller"
+	imply VIDEO_DAMAGE
 	---help---
 	Support for the LCD controller integrated in the Marvell
 	Armada XP SoC.
@@ -735,8 +779,19 @@ config NXP_TDA19988
 
 config ATMEL_HLCD
 	bool "Enable ATMEL video support using HLCDC"
+	imply VIDEO_DAMAGE
 	help
 	   HLCDC supports video output to an attached LCD panel.
+
+config BACKLIGHT_AAT2870
+	bool "Backlight Driver for AAT2870"
+	depends on BACKLIGHT
+	select DM_I2C
+	help
+	  Say Y to enable the backlight driver for Skyworks AAT2870 LED
+	  Backlight Driver and Multiple LDO Lighting Management Unit.
+	  Only backlight is supported as for now. Supported backlight
+	  level range is from 2 to 255 with step of 1.
 
 config BACKLIGHT_LM3532
 	bool "Backlight Driver for LM3532"
@@ -836,6 +891,7 @@ source "drivers/video/imx/Kconfig"
 
 config VIDEO_MXS
 	bool "Enable video support on i.MX28/i.MX6UL/i.MX7 SoCs"
+	imply VIDEO_DAMAGE
 	help
 	  Enable framebuffer driver for i.MX28/i.MX6UL/i.MX7 processors
 
@@ -898,6 +954,7 @@ config VIDEO_DW_MIPI_DSI
 
 config VIDEO_SIMPLE
 	bool "Simple display driver for preconfigured display"
+	imply VIDEO_DAMAGE
 	help
 	  Enables a simple generic display driver which utilizes the
 	  simple-framebuffer devicetree bindings.
@@ -916,6 +973,7 @@ config VIDEO_DT_SIMPLEFB
 
 config VIDEO_MCDE_SIMPLE
 	bool "Simple driver for ST-Ericsson MCDE with preconfigured display"
+	imply VIDEO_DAMAGE
 	help
 	  Enables a simple display driver for ST-Ericsson MCDE
 	  (Multichannel Display Engine), which reads the configuration from

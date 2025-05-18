@@ -90,13 +90,13 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 	help2man \
 	iasl \
 	imagemagick \
+	inetutils-telnet \
 	iputils-ping \
 	libconfuse-dev \
 	libgit2-dev \
 	libjson-glib-dev \
 	libgnutls28-dev \
 	libgnutls30 \
-	liblz4-tool \
 	libpixman-1-dev \
 	libpython3-dev \
 	libsdl1.2-dev \
@@ -107,6 +107,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 	libtool \
 	libudev-dev \
 	libusb-1.0-0-dev \
+	lz4 \
 	lzma-alone \
 	lzop \
 	mount \
@@ -124,7 +125,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 	python3-dev \
 	python3-pip \
 	python3-sphinx \
-	python3-virtualenv \
+	python3-venv \
 	rpm2cpio \
 	sbsigntool \
 	socat \
@@ -136,7 +137,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 	texinfo \
 	util-linux \
 	uuid-dev \
-	virtualenv \
 	vboot-kernel-utils \
 	vboot-utils \
 	xilinx-bootgen \
@@ -233,10 +233,18 @@ RUN git clone https://gitlab.com/qemu-project/qemu.git /tmp/qemu && \
 RUN git clone https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git /tmp/tf-a && \
 	cd /tmp/tf-a/ && \
 	git checkout v2.12.0 && \
-	cd tools/fiptool && \
-	make -j$(nproc) && \
-	mkdir -p /usr/local/bin && \
-	cp fiptool /usr/local/bin && \
+	make CROSS_COMPILE=/opt/gcc-${TCVER}-nolibc/aarch64-linux/bin/aarch64-linux- \
+		PLAT=fvp BL33=/dev/null -j$(nproc) all fip && \
+	mkdir -p /usr/local/bin /opt/tf-a/vexpress_fvp && \
+	cp tools/fiptool/fiptool /usr/local/bin && \
+	cp build/fvp/release/fip.bin build/fvp/release/bl1.bin \
+		/opt/tf-a/vexpress_fvp/ && \
+	rm -rf build/fvp && \
+	make CROSS_COMPILE=/opt/gcc-${TCVER}-nolibc/aarch64-linux/bin/aarch64-linux- \
+		PLAT=fvp BL33=/dev/null TRANSFER_LIST=1 -j$(nproc) all fip && \
+	mkdir -p /opt/tf-a/vexpress_fvp_bloblist && \
+	cp build/fvp/release/fip.bin build/fvp/release/bl1.bin \
+		/opt/tf-a/vexpress_fvp_bloblist/ && \
 	rm -rf /tmp/tf-a
 
 # Download the Arm Architecture FVP platform. This file is double compressed.
@@ -313,7 +321,7 @@ RUN wget -O /tmp/binman-requirements.txt https://source.denx.de/u-boot/u-boot/-/
 RUN wget -O /tmp/buildman-requirements.txt https://source.denx.de/u-boot/u-boot/-/raw/master/tools/buildman/requirements.txt
 RUN wget -O /tmp/patman-requirements.txt https://source.denx.de/u-boot/u-boot/-/raw/master/tools/patman/requirements.txt
 RUN wget -O /tmp/u_boot_pylib-requirements.txt https://source.denx.de/u-boot/u-boot/-/raw/master/tools/u_boot_pylib/requirements.txt
-RUN virtualenv -p /usr/bin/python3 /tmp/venv && \
+RUN python3 -m venv /tmp/venv && \
 	. /tmp/venv/bin/activate && \
 	pip install -r /tmp/pytest-requirements.txt \
 		-r /tmp/sphinx-requirements.txt \

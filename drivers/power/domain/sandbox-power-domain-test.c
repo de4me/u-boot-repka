@@ -34,6 +34,20 @@ int sandbox_power_domain_test_off(struct udevice *dev)
 	return power_domain_off(&sbrt->pd);
 }
 
+int sandbox_power_domain_test_on_ll(struct udevice *dev)
+{
+	struct sandbox_power_domain_test *sbrt = dev_get_priv(dev);
+
+	return power_domain_on_lowlevel(&sbrt->pd);
+}
+
+int sandbox_power_domain_test_off_ll(struct udevice *dev)
+{
+	struct sandbox_power_domain_test *sbrt = dev_get_priv(dev);
+
+	return power_domain_off_lowlevel(&sbrt->pd);
+}
+
 int sandbox_power_domain_test_free(struct udevice *dev)
 {
 	struct sandbox_power_domain_test *sbrt = dev_get_priv(dev);

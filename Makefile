@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0+
 
 VERSION = 2025
-PATCHLEVEL = 04
+PATCHLEVEL = 07
 SUBLEVEL =
-EXTRAVERSION =
+EXTRAVERSION = -rc2
 NAME =
 
 # *DOCUMENTATION*
@@ -30,7 +30,7 @@ else ifneq (,$(findstring $(MK_ARCH), "i386" "i486" "i586" "i686"))
   export HOST_ARCH=$(HOST_ARCH_X86)
 else ifneq (,$(findstring $(MK_ARCH), "aarch64" "armv8l"))
   export HOST_ARCH=$(HOST_ARCH_AARCH64)
-else ifneq (,$(findstring $(MK_ARCH), "arm" "armv7" "armv7a" "armv7l"))
+else ifneq (,$(findstring $(MK_ARCH), "arm" "armv5tel" "armv6l" "armv7" "armv7a" "armv7l"))
   export HOST_ARCH=$(HOST_ARCH_ARM)
 else ifeq ("riscv32", $(MK_ARCH))
   export HOST_ARCH=$(HOST_ARCH_RISCV32)
@@ -2231,7 +2231,8 @@ CLEAN_FILES += include/autoconf.mk* include/bmp_logo.h include/bmp_logo_data.h \
 	       itb.fit.fit itb.fit.itb itb.map spl.map mkimage-out.rom.mkimage \
 	       mkimage.rom.mkimage mkimage-in-simple-bin* rom.map simple-bin* \
 	       idbloader-spi.img lib/efi_loader/helloworld_efi.S *.itb \
-	       Test* capsule*.*.efi-capsule capsule*.map
+	       Test* capsule*.*.efi-capsule capsule*.map mkimage.imx-boot.spl \
+	       mkimage.imx-boot.u-boot mkimage-out.imx-boot.spl mkimage-out.imx-boot.u-boot
 
 # Directories & files removed with 'make mrproper'
 MRPROPER_DIRS  += include/config include/generated spl tpl vpl \
@@ -2447,7 +2448,8 @@ DOC_TARGETS := xmldocs latexdocs pdfdocs htmldocs epubdocs cleandocs \
 	       linkcheckdocs dochelp refcheckdocs texinfodocs infodocs
 PHONY += $(DOC_TARGETS)
 $(DOC_TARGETS): scripts_basic FORCE
-	$(Q)$(MAKE) $(build)=doc $@
+	$(Q)PYTHONPATH=$(srctree)/test/py/tests:$(srctree)/test/py \
+	$(MAKE) $(build)=doc $@
 
 PHONY += checkstack ubootrelease ubootversion
 

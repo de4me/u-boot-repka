@@ -96,6 +96,7 @@ config SPL_MAX_SIZE
 
 config SPL_PAD_TO
 	hex "Offset to which the SPL should be padded before appending the SPL payload"
+	default 0x7f8000 if ARCH_ROCKCHIP
 	default 0x31000 if ARCH_MX6 && MX6_OCRAM_256KB
 	default 0x11000 if ARCH_MX7 || (ARCH_MX6 && !MX6_OCRAM_256KB)
 	default 0x10000 if ARCH_KEYSTONE
@@ -270,6 +271,8 @@ config SPL_TEXT_BASE
 	default 0x40200000 if OMAP34XX
 	default 0x402F4000 if AM43XX
 	default 0x402F0400 if AM33XX
+	default 0x80080000 if ARCH_K3 && ARM64
+	default 0x43c00000 if ARCH_K3 && !ARM64
 	default 0x00908000 if ARCH_MX6
 	default 0x00912000 if ARCH_MX7
 	default 0x40301350 if OMAP54XX
@@ -360,6 +363,12 @@ config SPL_LOAD_IMX_CONTAINER
 	help
 	  Support booting U-Boot from an i.MX8 container image. If you are not
 	  using i.MX8, say 'n'.
+
+config SPL_IMX_CONTAINER_USE_TRAMPOLINE
+	bool
+	depends on SPL
+	help
+	  Enable SPL load reader to load data to a trampoline buffer.
 
 config IMX_CONTAINER_CFG
 	string "i.MX8 Container config file"
@@ -537,6 +546,7 @@ if SPL_SYS_MMCSD_RAW_MODE
 
 choice
 	prompt "Method for locating next phase of boot (e.g. U-Boot)"
+	default SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR if MVEBU_SPL_BOOT_DEVICE_MMC
 
 config SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR
 	bool "MMC raw mode: by sector"

@@ -43,7 +43,6 @@ endif
 
 obj-$(CONFIG_SMBIOS_PARSER) += smbios-parser.o
 obj-$(CONFIG_IMAGE_SPARSE) += image-sparse.o
-obj-y += initcall.o
 obj-y += ldiv.o
 obj-$(CONFIG_XXHASH) += xxhash.o
 obj-y += net_utils.o
@@ -159,6 +158,8 @@ obj-y += rtc-lib.o
 obj-$(CONFIG_LIB_ELF) += elf.o
 
 obj-$(CONFIG_$(PHASE_)SEMIHOSTING) += semihosting.o
+
+obj-$(CONFIG_UTHREAD) += uthread.o
 
 #
 # Build a fast OID lookup registry from include/linux/oid_registry.h

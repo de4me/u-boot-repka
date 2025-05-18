@@ -157,6 +157,7 @@ S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-socfpga.git
 F:	drivers/ddr/altera/
 F:	arch/arm/mach-socfpga/
+F:	configs/socfpga_agilex5_vab_defconfig
 F:	drivers/sysreset/sysreset_socfpga*
 
 ARM AMLOGIC SOC SUPPORT
@@ -296,7 +297,7 @@ F:	test/cmd/armffa.c
 F:	test/dm/ffa.c
 
 ARM FREESCALE IMX
-M:	Stefano Babic <sbabic@denx.de>
+M:	Stefano Babic <sbabic@nabladev.com>
 M:	Fabio Estevam <festevam@gmail.com>
 R:	NXP i.MX U-Boot Team <uboot-imx@nxp.com>
 S:	Maintained
@@ -1823,6 +1824,15 @@ S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-usb.git topic-xhci
 F:	drivers/usb/host/xhci*
 F:	include/usb/xhci.h
+
+UTHREAD
+M:	Jerome Forissier <jerome.forissier@linaro.org>
+S:	Maintained
+F:	cmd/spawn.c
+F:	include/uthread.h
+F:	lib/uthread.c
+F:	test/cmd/spawn.c
+F:	test/lib/uthread.c
 
 UUID testing
 M:	Abdellatif El Khlifi <abdellatif.elkhlifi@arm.com>

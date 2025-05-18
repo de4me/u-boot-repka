@@ -66,6 +66,15 @@ struct power_domain {
 };
 
 /**
+ * struct power_domain_plat - Per device accessible structure
+ * @subdomains: Number of subdomains covered by this device, required
+ *              for refcounting
+ */
+struct power_domain_plat {
+	int subdomains;
+};
+
+/**
  * power_domain_get - Get/request the power domain for a device.
  *
  * This looks up and requests a power domain. Each device is assumed to have

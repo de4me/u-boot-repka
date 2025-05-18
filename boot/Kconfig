@@ -427,8 +427,8 @@ config BOOT_DEFAULTS
 
 menuconfig BOOTSTD
 	bool "Standard boot"
-	default y
-	depends on DM && OF_CONTROL && BLK
+	default y if BLK
+	depends on DM && OF_CONTROL
 	help
 	  U-Boot supports a standard way of locating something to boot,
 	  typically an Operating System such as Linux, provided by a distro such
@@ -1170,7 +1170,7 @@ config BOOTSTAGE_REPORT
 config BOOTSTAGE_RECORD_COUNT
 	int "Number of boot stage records to store"
 	depends on BOOTSTAGE
-	default 30
+	default 50
 	help
 	  This is the size of the bootstage record list and is the maximum
 	  number of bootstage records that can be recorded.
