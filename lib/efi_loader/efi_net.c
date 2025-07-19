@@ -17,7 +17,9 @@
 
 #define LOG_CATEGORY LOGC_EFI
 
+#include <efi_device_path.h>
 #include <efi_loader.h>
+#include <env.h>
 #include <dm.h>
 #include <linux/sizes.h>
 #include <malloc.h>
@@ -51,7 +53,7 @@ static int next_dp_entry;
 static struct wget_http_info efi_wget_info = {
 	.set_bootdev = false,
 	.check_buffer_size = true,
-
+	.silent = true,
 };
 #endif
 
@@ -1129,7 +1131,7 @@ efi_status_t efi_net_register(struct udevice *dev)
 	struct efi_net_obj *netobj;
 	void *transmit_buffer = NULL;
 	uchar **receive_buffer = NULL;
-	size_t *receive_lengths;
+	size_t *receive_lengths = NULL;
 	int i, j;
 
 	if (!dev) {

@@ -11,9 +11,8 @@ config ROCKCHIP_PX30
 	select TPL_TINY_FRAMEWORK if TPL
 	select TPL_HAVE_INIT_STACK if TPL
 	imply SPL_SEPARATE_BSS
-	select SPL_SERIAL
-	select TPL_SERIAL
-	select DEBUG_UART_BOARD_INIT
+	imply SPL_SERIAL
+	imply TPL_SERIAL
 	imply ROCKCHIP_COMMON_BOARD
 	imply ROCKCHIP_COMMON_STACK_ADDR
 	imply SPL_ROCKCHIP_COMMON_BOARD
@@ -363,7 +362,7 @@ config ROCKCHIP_RK3528
 	imply SPL_REGMAP
 	imply SPL_SERIAL
 	imply SPL_SYSCON
-	imply SYS_RELOC_GD_ENV_ADDR
+	imply ENV_RELOC_GD_ENV_ADDR
 	imply SYSRESET
 	imply SYSRESET_PSCI if SPL_ATF
 	help
@@ -447,7 +446,7 @@ config ROCKCHIP_RK3576
 	imply SPL_REGMAP
 	imply SPL_SERIAL
 	imply SPL_SYSCON
-	imply SYS_RELOC_GD_ENV_ADDR
+	imply ENV_RELOC_GD_ENV_ADDR
 	imply SYSRESET
 	help
 	  The Rockchip RK3576 is a ARM-based SoC with quad-core Cortex-A72 and

@@ -1,3 +1,5 @@
+menu "RAM drivers using Driver Model"
+
 config RAM
 	bool "Enable RAM drivers using Driver Model"
 	depends on DM
@@ -135,3 +137,6 @@ source "drivers/ram/sifive/Kconfig"
 source "drivers/ram/stm32mp1/Kconfig"
 source "drivers/ram/starfive/Kconfig"
 source "drivers/ram/sunxi/Kconfig"
+source "drivers/ram/thead/Kconfig"
+
+endmenu

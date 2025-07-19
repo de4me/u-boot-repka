@@ -119,10 +119,12 @@ Shell commands
    cmd/sleep
    cmd/sm
    cmd/smbios
+   cmd/sntp
    cmd/sound
    cmd/source
    cmd/tcpm
    cmd/temperature
+   cmd/test
    cmd/tftpput
    cmd/trace
    cmd/true

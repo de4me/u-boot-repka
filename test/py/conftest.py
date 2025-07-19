@@ -514,8 +514,8 @@ def ubman(request):
         handle_exception(ubconfig, ubman_fix, log, err, 'Lab timeout', True)
     except BootFail as err:
         handle_exception(ubconfig, ubman_fix, log, err, 'Boot fail', True,
-                         ubman.get_spawn_output())
-    except Unexpected:
+                         ubman_fix.get_spawn_output())
+    except Unexpected as err:
         handle_exception(ubconfig, ubman_fix, log, err, 'Unexpected test output',
                          False)
     return ubman_fix
@@ -711,9 +711,13 @@ def setup_buildconfigspec(item):
     """
 
     for options in item.iter_markers('buildconfigspec'):
-        option = options.args[0]
-        if not ubconfig.buildconfig.get('config_' + option.lower(), None):
-            pytest.skip('.config feature "%s" not enabled' % option.lower())
+        nomatch = True
+        for arg in options.args:
+            if ubconfig.buildconfig.get('config_' + arg.lower(), None):
+                nomatch = False
+        if nomatch:
+            argsString = ', '.join(options.args)
+            pytest.skip(f'.config features "{argsString}" not enabled')
     for options in item.iter_markers('notbuildconfigspec'):
         option = options.args[0]
         if ubconfig.buildconfig.get('config_' + option.lower(), None):

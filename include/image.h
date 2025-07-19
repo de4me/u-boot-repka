@@ -233,6 +233,7 @@ enum image_type_t {
 	IH_TYPE_RENESAS_SPKG,		/* Renesas SPKG image */
 	IH_TYPE_STARFIVE_SPL,		/* StarFive SPL image */
 	IH_TYPE_TFA_BL31,		/* TFA BL31 image */
+	IH_TYPE_STM32IMAGE_V2,		/* STMicroelectronics STM32 Image V2.0 */
 
 	IH_TYPE_COUNT,			/* Number of image types */
 };
@@ -1688,7 +1689,7 @@ struct sig_header_s {
  */
 int image_pre_load(ulong addr);
 
-#if defined(USE_HOSTCC)
+#if defined(USE_HOSTCC) && CONFIG_IS_ENABLED(LIBCRYPTO)
 /**
  * rsa_verify_openssl() - Verify a signature against some data with openssl API
  *
@@ -2133,7 +2134,7 @@ struct fit_loadable_tbl {
  * _handler is the handler function to call after this image type is loaded
  */
 #define U_BOOT_FIT_LOADABLE_HANDLER(_type, _handler) \
-	ll_entry_declare(struct fit_loadable_tbl, _function, fit_loadable) = { \
+	ll_entry_declare(struct fit_loadable_tbl, _type, fit_loadable) = { \
 		.type = _type, \
 		.handler = _handler, \
 	}
