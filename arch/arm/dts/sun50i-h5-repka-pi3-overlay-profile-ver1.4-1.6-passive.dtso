@@ -1,0 +1,68 @@
+/dts-v1/;
+/plugin/;
+#include <dt-bindings/thermal/thermal.h>
+
+/ {
+	fragment@0 {
+		target = <&cpu_warm_level_0>;
+		__overlay__ {
+			temperature = <61000>;
+		};
+	};
+
+	fragment@1 {
+		target = <&cpu_warm_level_1>;
+		__overlay__ {
+			temperature = <65000>;
+		};
+	};
+
+	fragment@2 {
+		target = <&cpu_warm_level_2>;
+		__overlay__ {
+			temperature = <69000>;
+		};
+	};
+
+	fragment@3 {
+		target = <&cpu_hot_level_0>;
+		__overlay__ {
+			temperature = <74000>;
+		};
+	};
+
+	fragment@4 {
+		target = <&cpu_hot_level_1>;
+		__overlay__ {
+			temperature = <78000>;
+		};
+	};
+
+	fragment@5 {
+		target = <&cpu_hot_level_2>;
+		__overlay__ {
+			temperature = <82000>;
+		};
+	};
+
+	fragment@6 {
+		target = <&cpu_very_hot_level_0>;
+		__overlay__ {
+			temperature = <86000>;
+		};
+	};
+
+	fragment@7 {
+		target = <&cpu_very_hot_level_1>;
+		__overlay__ {
+			temperature = <88000>;
+		};
+	};
+
+	fragment@8 {
+		target = <&cpu_critical>;
+		__overlay__ {
+			temperature = <97000>;
+		};
+	};
+};

@@ -1,0 +1,48 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target-path = "/";
+		__overlay__ {
+			can0_osc_fixed: can0_osc_fixed {
+				compatible = "fixed-clock";
+				#clock-cells = <0>;
+				clock-frequency = <16000000>;
+			};
+		};
+	};
+
+	fragment@1 {
+		target = <&pio>;
+		__overlay__ {
+			can0_pin_irq: can0_pin_irq {
+				pins = "PA2";		/* irq */
+				function = "irq";
+				bias-pull-up;
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <&spi0>;
+		__overlay__ {
+			pinctrl-names = "default", "default";
+			pinctrl-1 = <&spi0_cs1>;
+			cs-gpios = <0>, <&pio 0 3 0>; /* PA3 */
+
+			status = "okay";
+
+			can0: mcp2515@0 {
+				reg = <0>;
+				compatible = "microchip,mcp2515";
+				pinctrl-names = "default";
+				pinctrl-0 = <&can0_pin_irq>;
+				spi-max-frequency = <10000000>;
+				interrupt-parent = <&pio>;
+				interrupts = <0 2 8>; 			/* PA2 8-active low level-sensitive */
+				clocks = <&can0_osc_fixed>;
+			};
+		};
+	};
+};

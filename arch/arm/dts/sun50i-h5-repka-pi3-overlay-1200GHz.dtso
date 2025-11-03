@@ -1,0 +1,73 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target-path = "/";
+		__overlay__ {
+			repka-freq = "1.200 GHz";
+		};
+	};
+
+	fragment@1 {
+		target = <&cpu_opp_table>;
+		__overlay__ {
+			compatible = "operating-points-v2";
+			opp-shared;
+
+			opp-240000000 {
+				opp-hz = /bits/ 64 <240000000>;
+				opp-microvolt = <1040000>;
+				clock-latency-ns = <244144>; /* 8 32k periods */
+			};
+
+			opp-288000000 {
+				opp-hz = /bits/ 64 <288000000>;
+				opp-microvolt = <1000000>;
+				clock-latency-ns = <244144>; /* 8 32k periods */
+			};
+
+			opp-336000000 {
+				opp-hz = /bits/ 64 <336000000>;
+				opp-microvolt = <1040000>;
+				clock-latency-ns = <244144>; /* 8 32k periods */
+			};
+
+			opp-480000000 {
+				opp-hz = /bits/ 64 <480000000>;
+				opp-microvolt = <1040000>;
+				clock-latency-ns = <244144>; /* 8 32k periods */
+			};
+
+			opp-648000000 {
+				opp-hz = /bits/ 64 <648000000>;
+				opp-microvolt = <1040000>;
+				clock-latency-ns = <244144>; /* 8 32k periods */
+			};
+
+			opp-816000000 {
+				opp-hz = /bits/ 64 <816000000>;
+				opp-microvolt = <1040000>;
+				clock-latency-ns = <244144>; /* 8 32k periods */
+			};
+
+			opp-1008000000 {
+				opp-hz = /bits/ 64 <1008000000>;
+				opp-microvolt = <1200000>;
+				clock-latency-ns = <244144>; /* 8 32k periods */
+			};
+
+			opp-10560000000 {
+				opp-hz = /bits/ 64 <1056000000>;
+				opp-microvolt = <1280000>;
+				clock-latency-ns = <244144>; /* 8 32k periods */
+			};
+
+			opp-1200000000 {
+				opp-hz = /bits/ 64 <1200000000>;
+				opp-microvolt = <1300000>;
+				clock-latency-ns = <244144>; /* 8 32k periods  */
+			};
+		};
+	};
+};

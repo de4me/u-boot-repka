@@ -125,10 +125,6 @@
 	status = "okay";
 };
 
-&tve {
-	status = "disabled";
-};
-
 &hdmi {
 	status = "okay";
 };
@@ -226,7 +222,7 @@
 	};
 };
 
-#include "axp22x.dtsi"
+#include "axp22x-repka.dtsi"
 
 &ac_power_supply {
 	status = "okay";
@@ -260,7 +256,7 @@
 &reg_dcdc2 {
 	regulator-always-on;
 	regulator-min-microvolt = <1000000>;
-	regulator-max-microvolt = <1420000>; 
+	regulator-max-microvolt = <1420000>;
 	regulator-name = "vdd-cpux-a";
 };
 
