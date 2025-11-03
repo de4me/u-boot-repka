@@ -22,11 +22,6 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-int board_init(void)
-{
-	return 0;
-}
-
 phys_size_t get_effective_memsize(void)
 {
 	/* Use bank0 only */
@@ -99,5 +94,12 @@ int dram_init_banksize(void)
 	return 0;
 }
 
-EVENT_SPY_SIMPLE(EVT_LAST_STAGE_INIT, board_set_console);
+static int last_stage_init(void)
+{
+#ifdef CONFIG_SYS_SKIP_UART_INIT
+	return board_set_console();
+#endif
+	return 0;
+}
+EVENT_SPY_SIMPLE(EVT_LAST_STAGE_INIT, last_stage_init);
 

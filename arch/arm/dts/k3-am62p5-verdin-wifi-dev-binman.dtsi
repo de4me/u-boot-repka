@@ -25,7 +25,7 @@
 			content-sysfw-data = <&combined_tifs_cfg_fs>;
 			content-sysfw-inner-cert = <&sysfw_inner_cert_fs>;
 			content-dm-data = <&combined_dm_cfg_fs>;
-			load = <0x43c00000>;
+			load = <CONFIG_SPL_TEXT_BASE>;
 			load-sysfw = <0x40000>;
 			load-sysfw-data = <0x67000>;
 			load-dm-data = <0x43c4a800>;
@@ -74,7 +74,7 @@
 			content-sysfw-data = <&combined_tifs_cfg_hs>;
 			content-sysfw-inner-cert = <&sysfw_inner_cert_hs>;
 			content-dm-data = <&combined_dm_cfg_hs>;
-			load = <0x43c00000>;
+			load = <CONFIG_SPL_TEXT_BASE>;
 			load-sysfw = <0x40000>;
 			load-sysfw-data = <0x67000>;
 			load-dm-data = <0x43c4a800>;
@@ -112,7 +112,7 @@
 
 #if IS_ENABLED(CONFIG_TARGET_VERDIN_AM62P_A53)
 
-#define SPL_VERDIN_AM62P_DTB "spl/dts/k3-am62p5-verdin-wifi-dev.dtb"
+#define SPL_VERDIN_AM62P_DTB "spl/dts/ti/k3-am62p5-verdin-wifi-dev.dtb"
 #define VERDIN_AM62P_DTB "u-boot.dtb"
 
 &binman {

@@ -390,7 +390,6 @@ $(obj)/$(BOARD)-spl.bin: $(obj)/u-boot-spl.bin
 endif
 
 $(obj)/u-boot-spl.ldr: $(obj)/u-boot-spl
-	$(CREATE_LDR_ENV)
 	$(LDR) -T $(CONFIG_LDR_CPU) -c $@ $< $(LDR_FLAGS)
 	$(BOARD_SIZE_CHECK)
 
@@ -443,7 +442,8 @@ MKIMAGEFLAGS_sunxi-spl.bin = \
 	-A $(ARCH) \
 	-T $(CONFIG_SPL_IMAGE_TYPE) \
 	-a $(CONFIG_SPL_TEXT_BASE) \
-	-n $(CONFIG_DEFAULT_DEVICE_TREE)
+	-n $(CONFIG_DEFAULT_DEVICE_TREE) \
+	$(if $(KEYDIR),-k $(KEYDIR))
 
 OBJCOPYFLAGS_u-boot-spl-dtb.hex := -I binary -O ihex --change-address=$(CONFIG_SPL_TEXT_BASE)
 

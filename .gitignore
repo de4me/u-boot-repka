@@ -50,17 +50,20 @@ fit-dtb.blob*
 /SPL*
 /System.map
 /boards.cfg
+/mkimage*mkimage
 /mkimage-in-simple-bin*
 /simple-bin*
 /u-boot*
 /*.log
 
 #
-# git files that we don't want to ignore even it they are dot-files
+# We don't want to ignore the following even if they are dot-files
 #
+!.clang-format
+!.get_maintainer.*
+!.gitattributes
 !.gitignore
 !.mailmap
-!.get_maintainer.*
 
 #
 # Generated files

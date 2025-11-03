@@ -9,6 +9,9 @@
 #include <asm/arch-rockchip/bootrom.h>
 #include <asm/arch-rockchip/hardware.h>
 
+#define VPU_GRF_BASE			0xff340000
+#define USB3OTG_CON1			0x44
+
 #define FIREWALL_DDR_BASE		0xff2e0000
 #define FW_DDR_MST6_REG			0x58
 #define FW_DDR_MST7_REG			0x5c
@@ -46,6 +49,21 @@ void board_debug_uart_init(void)
 {
 }
 
+u32 read_brom_bootsource_id(void)
+{
+	u32 bootsource_id = readl(BROM_BOOTSOURCE_ID_ADDR);
+
+	/* Re-map the raw value read from reg to an existing BROM_BOOTSOURCE
+	 * enum value to avoid having to create a larger boot_devices table.
+	 */
+	if (bootsource_id == 0x81)
+		return BROM_BOOTSOURCE_USB;
+	else if (bootsource_id > BROM_LAST_BOOTSOURCE)
+		log_debug("Unknown bootsource %x\n", bootsource_id);
+
+	return bootsource_id;
+}
+
 int arch_cpu_init(void)
 {
 	u32 val;
@@ -68,6 +86,9 @@ int arch_cpu_init(void)
 	/* Set the usb to access ddr memory */
 	val = readl(FIREWALL_DDR_BASE + FW_DDR_MST16_REG);
 	writel(val & 0xffff0000, FIREWALL_DDR_BASE + FW_DDR_MST16_REG);
+
+	/* Disable USB3OTG U3 port, later enabled in COMBPHY driver */
+	writel(0xffff0181, VPU_GRF_BASE + USB3OTG_CON1);
 
 	return 0;
 }

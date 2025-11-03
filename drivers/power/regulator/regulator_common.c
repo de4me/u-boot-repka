@@ -9,7 +9,6 @@
 #include <asm/gpio.h>
 #include <linux/delay.h>
 #include <power/regulator.h>
-#include "regulator_common.h"
 
 #include "regulator_common.h"
 
@@ -44,6 +43,16 @@ int regulator_common_of_to_plat(struct udevice *dev,
 		plat->off_on_delay_us =
 			dev_read_u32_default(dev, "u-boot,off-on-delay-us", 0);
 	}
+
+	ret = device_get_supply_regulator(dev, "vin-supply", &plat->vin_supply);
+	if (ret) {
+		debug("Regulator vin regulator not defined: %d\n", ret);
+		if (ret != -ENOENT)
+			return ret;
+	}
+
+	if (plat->vin_supply)
+		regulator_set_enable_if_allowed(plat->vin_supply, true);
 
 	return 0;
 }

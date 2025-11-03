@@ -85,15 +85,15 @@ static bool dh_stm32_mac_is_in_ks8851(void)
 	if (!ofnode_valid(node))
 		return false;
 
+	if (!ofnode_device_is_compatible(node, "micrel,ks8851-mll"))
+		return false;
+
 	ret = ofnode_get_path(node, path, sizeof(path));
 	if (ret)
 		return false;
 
 	ret = uclass_get_device_by_of_path(UCLASS_ETH, path, &udev);
 	if (ret)
-		return false;
-
-	if (!ofnode_device_is_compatible(node, "micrel,ks8851-mll"))
 		return false;
 
 	/*
@@ -776,7 +776,7 @@ int ft_board_setup(void *blob, struct bd_info *bd)
 #endif
 
 #if defined(CONFIG_XPL_BUILD)
-void spl_perform_fixups(struct spl_image_info *spl_image)
+void spl_perform_board_fixups(struct spl_image_info *spl_image)
 {
 	dh_stm32_ks8851_fixup(spl_image_fdt_addr(spl_image));
 }

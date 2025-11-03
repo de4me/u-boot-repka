@@ -8,6 +8,7 @@
 #include <dm/device.h>
 #include <linux/delay.h>
 #include <linux/errno.h>
+#include <lwip/apps/sntp.h>
 #include <lwip/dhcp.h>
 #include <lwip/dns.h>
 #include <lwip/timeouts.h>
@@ -32,6 +33,7 @@ static int dhcp_loop(struct udevice *udev)
 	char ipstr[] = "ipaddr\0\0";
 	char maskstr[] = "netmask\0\0";
 	char gwstr[] = "gatewayip\0\0";
+	const ip_addr_t *ntpserverip;
 	unsigned long start;
 	struct netif *netif;
 	struct dhcp *dhcp;
@@ -47,6 +49,13 @@ static int dhcp_loop(struct udevice *udev)
 	netif = net_lwip_new_netif_noip(udev);
 	if (!netif)
 		return CMD_RET_FAILURE;
+
+	/*
+	 * Request the DHCP stack to parse and store the NTP servers for
+	 * eventual use by the SNTP command
+	 */
+	if (CONFIG_IS_ENABLED(CMD_SNTP))
+		sntp_servermode_dhcp(1);
 
 	start = get_timer(0);
 
@@ -102,6 +111,11 @@ static int dhcp_loop(struct udevice *udev)
 		strncpy(boot_file_name, dhcp->boot_file_name,
 			sizeof(boot_file_name));
 #endif
+	if (CONFIG_IS_ENABLED(CMD_SNTP)) {
+		ntpserverip = sntp_getserver(1);
+		if (ntpserverip != IP_ADDR_ANY)
+			env_set("ntpserverip", ip4addr_ntoa(ntpserverip));
+	}
 
 	printf("DHCP client bound to address %pI4 (%lu ms)\n",
 	       &dhcp->offered_ip_addr, get_timer(start));
@@ -135,26 +149,4 @@ int do_dhcp(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
 	}
 
 	return CMD_RET_SUCCESS;
-}
-
-int dhcp_run(ulong addr, const char *fname, bool autoload)
-{
-	char *dhcp_argv[] = {"dhcp", NULL, };
-#ifdef CONFIG_CMD_TFTPBOOT
-	char *tftp_argv[] = {"tftpboot", boot_file_name, NULL, };
-#endif
-	struct cmd_tbl cmdtp = {};	/* dummy */
-
-	if (autoload) {
-#ifdef CONFIG_CMD_TFTPBOOT
-		/* Assume DHCP was already performed */
-		if (boot_file_name[0])
-			return do_tftpb(&cmdtp, 0, 2, tftp_argv);
-		return 0;
-#else
-		return -EOPNOTSUPP;
-#endif
-	}
-
-	return do_dhcp(&cmdtp, 0, 1, dhcp_argv);
 }

@@ -14,11 +14,6 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-int board_init(void)
-{
-	return 0;
-}
-
 int dram_init(void)
 {
 	struct npcm_gcr *gcr = (struct npcm_gcr *)NPCM_GCR_BA;
@@ -69,7 +64,9 @@ static int last_stage_init(void)
 		}
 		sprintf(value, "ttyS%d,115200n8", dev->seq_);
 		env_set("console", value);
+#ifdef CONFIG_SYS_SKIP_UART_INIT
 		return board_set_console();
+#endif
 	}
 
 	return 0;

@@ -16,13 +16,8 @@
 
 #include "../common/fdt_ops.h"
 
-int board_init(void)
-{
-	return 0;
-}
-
 #if defined(CONFIG_XPL_BUILD)
-void spl_perform_fixups(struct spl_image_info *spl_image)
+void spl_perform_board_fixups(struct spl_image_info *spl_image)
 {
 	if (IS_ENABLED(CONFIG_K3_DDRSS)) {
 		if (IS_ENABLED(CONFIG_K3_INLINE_ECC))

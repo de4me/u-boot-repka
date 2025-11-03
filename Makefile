@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0+
 
-VERSION = 2025
-PATCHLEVEL = 07
+VERSION = 2026
+PATCHLEVEL = 01
 SUBLEVEL =
-EXTRAVERSION =
+EXTRAVERSION = -rc1
 NAME =
 
 # *DOCUMENTATION*
@@ -1574,7 +1574,6 @@ u-boot-nodtb.bin: u-boot FORCE
 	$(BOARD_SIZE_CHECK)
 
 u-boot.ldr:	u-boot
-		$(CREATE_LDR_ENV)
 		$(LDR) -T $(CONFIG_LDR_CPU) -c $@ $< $(LDR_FLAGS)
 		$(BOARD_SIZE_CHECK)
 
@@ -1891,7 +1890,7 @@ u-boot-payload.lds: $(LDSCRIPT_EFI) FORCE
 quiet_cmd_u-boot_payload ?= LD      $@
       cmd_u-boot_payload ?= $(LD) $(LDFLAGS_EFI_PAYLOAD) -o $@ \
       -T u-boot-payload.lds arch/x86/cpu/call32.o \
-      lib/efi/efi.o lib/efi/efi_stub.o u-boot.bin.o \
+      lib/efi_client/efi.o lib/efi_client/efi_stub.o u-boot.bin.o \
       $(addprefix arch/$(ARCH)/lib/,$(EFISTUB))
 
 u-boot-payload: u-boot.bin.o u-boot-payload.lds FORCE
@@ -2130,6 +2129,11 @@ $(filter-out tools, $(u-boot-dirs)): tools
 # The "examples" conditionally depend on U-Boot (say, when USE_PRIVATE_LIBGCC
 # is "yes"), so compile examples after U-Boot is compiled.
 examples: $(filter-out examples, $(u-boot-dirs))
+
+ifeq ($(CONFIG_USE_PRIVATE_LIBGCC),y)
+# lib/efi_loader apps depend on arch/$(ARCH)/lib for lib.a
+lib: $(filter arch/$(ARCH)/lib, $(u-boot-dirs))
+endif
 
 # The setlocalversion script comes from linux and expects a
 # KERNELVERSION variable in the environment for figuring out which
@@ -2465,7 +2469,8 @@ CLEAN_FILES += include/autoconf.mk* include/bmp_logo.h include/bmp_logo_data.h \
 	       mkimage.rom.mkimage mkimage-in-simple-bin* rom.map simple-bin* \
 	       idbloader-spi.img lib/efi_loader/helloworld_efi.S *.itb \
 	       Test* capsule*.*.efi-capsule capsule*.map mkimage.imx-boot.spl \
-	       mkimage.imx-boot.u-boot mkimage-out.imx-boot.spl mkimage-out.imx-boot.u-boot
+	       mkimage.imx-boot.u-boot mkimage-out.imx-boot.spl mkimage-out.imx-boot.u-boot \
+	       imx9image* m33-oei-ddrfw*
 
 # Directories & files removed with 'make mrproper'
 MRPROPER_DIRS  += include/config include/generated spl tpl vpl \
@@ -2660,6 +2665,10 @@ help:
 	@echo  ''
 	@echo  'Execute "make" or "make all" to build all targets marked with [*] '
 	@echo  'For further info see the ./README file'
+
+ifneq ($(filter tests pcheck qcheck tcheck,$(MAKECMDGOALS)),)
+export sub_make_done := 0
+endif
 
 tests check:
 	$(srctree)/test/run

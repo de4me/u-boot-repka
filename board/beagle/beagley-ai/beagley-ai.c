@@ -21,11 +21,6 @@ void set_dfu_alt_info(char *interface, char *devstr)
 }
 #endif
 
-int board_init(void)
-{
-	return 0;
-}
-
 int dram_init(void)
 {
 	return fdtdec_setup_mem_size_base();
@@ -37,7 +32,7 @@ int dram_init_banksize(void)
 }
 
 #if defined(CONFIG_XPL_BUILD)
-void spl_perform_fixups(struct spl_image_info *spl_image)
+void spl_perform_board_fixups(struct spl_image_info *spl_image)
 {
 	if (IS_ENABLED(CONFIG_K3_DDRSS)) {
 		if (IS_ENABLED(CONFIG_K3_INLINE_ECC))

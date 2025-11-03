@@ -3,6 +3,10 @@
  * Copyright (c) 2024 Rockchip Electronics Co., Ltd
  */
 
+#define LOG_CATEGORY LOGC_ARCH
+
+#include <dm.h>
+#include <misc.h>
 #include <asm/armv8/mmu.h>
 #include <asm/arch-rockchip/bootrom.h>
 #include <asm/arch-rockchip/hardware.h>
@@ -29,8 +33,18 @@
 #define SGRF_DOMAIN_CON4	0x10
 #define SGRF_DOMAIN_CON5	0x14
 
+#define USB_GRF_BASE		0x2601E000
+#define USB3OTG0_CON1		0x0030
+
+enum {
+	BROM_BOOTSOURCE_FSPI0 = 3,
+	BROM_BOOTSOURCE_FSPI1_M1 = 6,
+};
+
 const char * const boot_devices[BROM_LAST_BOOTSOURCE + 1] = {
 	[BROM_BOOTSOURCE_EMMC] = "/soc/mmc@2a330000",
+	[BROM_BOOTSOURCE_FSPI0] = "/soc/spi@2a340000/flash@0",
+	[BROM_BOOTSOURCE_FSPI1_M1] = "/soc/spi@2a300000/flash@0",
 	[BROM_BOOTSOURCE_SD] = "/soc/mmc@2a310000",
 };
 
@@ -76,6 +90,24 @@ struct mm_region *mem_map = rk3576_mem_map;
 
 void board_debug_uart_init(void)
 {
+}
+
+u32 read_brom_bootsource_id(void)
+{
+	u32 bootsource_id = readl(BROM_BOOTSOURCE_ID_ADDR);
+
+	/* Re-map the raw value read from reg to a redefined or existing
+	 * BROM_BOOTSOURCE enum value to avoid having to create a larger
+	 * boot_devices table.
+	 */
+	if (bootsource_id == 0x23)
+		return BROM_BOOTSOURCE_FSPI1_M1;
+	else if (bootsource_id == 0x81)
+		return BROM_BOOTSOURCE_USB;
+	else if (bootsource_id > BROM_LAST_BOOTSOURCE)
+		log_debug("Unknown bootsource %x\n", bootsource_id);
+
+	return bootsource_id;
 }
 
 #define HP_TIMER_BASE			CONFIG_ROCKCHIP_STIMER_BASE
@@ -150,6 +182,53 @@ int arch_cpu_init(void)
 	 * Module: GMAC0/1, MMU0/1(PCIe, SATA, USB3)
 	 */
 	writel(0xffffff00, SYS_SGRF_BASE + SYS_SGRF_SOC_CON20);
+
+	/* Disable USB3OTG0 U3 port, later enabled by USBDP PHY driver */
+	writel(0xffff0188, USB_GRF_BASE + USB3OTG0_CON1);
+
+	return 0;
+}
+
+#define RK3576_OTP_CPU_CODE_OFFSET		0x02
+#define RK3576_OTP_SPECIFICATION_OFFSET		0x08
+
+int checkboard(void)
+{
+	u8 cpu_code[2], specification;
+	struct udevice *dev;
+	char suffix[2];
+	int ret;
+
+	if (!IS_ENABLED(CONFIG_ROCKCHIP_OTP) || !CONFIG_IS_ENABLED(MISC))
+		return 0;
+
+	ret = uclass_get_device_by_driver(UCLASS_MISC,
+					  DM_DRIVER_GET(rockchip_otp), &dev);
+	if (ret) {
+		log_debug("Could not find otp device, ret=%d\n", ret);
+		return 0;
+	}
+
+	/* cpu-code: SoC model, e.g. 0x35 0x76 */
+	ret = misc_read(dev, RK3576_OTP_CPU_CODE_OFFSET, cpu_code, 2);
+	if (ret < 0) {
+		log_debug("Could not read cpu-code, ret=%d\n", ret);
+		return 0;
+	}
+
+	/* specification: SoC variant, e.g. 0xA for RK3576J */
+	ret = misc_read(dev, RK3576_OTP_SPECIFICATION_OFFSET, &specification, 1);
+	if (ret < 0) {
+		log_debug("Could not read specification, ret=%d\n", ret);
+		return 0;
+	}
+	specification &= 0x1f;
+
+	/* for RK3576J i.e. '@' + 0xA = 'J' */
+	suffix[0] = specification > 1 ? '@' + specification : '\0';
+	suffix[1] = '\0';
+
+	printf("SoC:   RK%02x%02x%s\n", cpu_code[0], cpu_code[1], suffix);
 
 	return 0;
 }

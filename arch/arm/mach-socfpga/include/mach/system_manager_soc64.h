@@ -33,6 +33,7 @@ void populate_sysmgr_pinmux(void);
 #define SYSMGR_SOC64_ECC_INTMASK_CLR		0x98
 #define SYSMGR_SOC64_ECC_INTMASK_SERR		0x9C
 #define SYSMGR_SOC64_ECC_INTMASK_DERR		0xA0
+#define SYSMGR_SOC64_USB3_MISC_CTRL_REG0	0x1F0
 #define SYSMGR_SOC64_MPFE_CONFIG		0x228
 #define SYSMGR_SOC64_BOOT_SCRATCH_POR0		0x258
 #define SYSMGR_SOC64_BOOT_SCRATCH_POR1		0x25C
@@ -47,6 +48,17 @@ void populate_sysmgr_pinmux(void);
 #define ALT_SYSMGR_SCRATCH_REG_POR_0_DDR_PROGRESS_MASK	BIT(0)
 #define ALT_SYSMGR_SCRATCH_REG_POR_1_REVA_WORKAROUND_USER_MODE_MASK	BIT(0)
 #define ALT_SYSMGR_SCRATCH_REG_POR_1_REVA_WORKAROUND_MASK	BIT(1)
+
+/*
+ * Bits for SYSMGR_SOC64_USB3_MISC_CTRL_REG0
+ * Bits[14:13] Port Overcurrent
+ * Bit[12] Reset Pulse Override
+ */
+#define SYSMGR_SOC64_USB3_MISC_CTRL_REG0_PORT_OVR_CURR	GENMASK(14, 13)
+#define SYSMGR_SOC64_USB3_MISC_CTRL_REG0_RESET_PUL_OVR	BIT(12)
+#define SET_USB3_MISC_CTRL_REG0_PORT_RESET_PUL_OVR	1
+/* BIT 1 actually reflects PIPE power present signal */
+#define SET_USB3_MISC_CTRL_REG0_PORT_OVR_CURR_BIT_1	2
 #else
 #define SYSMGR_SOC64_NAND_AXUSER		0x5c
 #define SYSMGR_SOC64_DMA_L3MASTER		0x74
@@ -140,6 +152,27 @@ void populate_sysmgr_pinmux(void);
 #define ALT_SYSMGR_SCRATCH_REG_0_DDR_SHA_MASK		BIT(30)
 #define ALT_SYSMGR_SCRATCH_REG_0_DDR_RESET_TYPE_MASK	(BIT(29) | BIT(28))
 #define ALT_SYSMGR_SCRATCH_REG_0_DDR_RESET_TYPE_SHIFT	28
+
+/*
+ * Bits for SYSMGR_SOC64_BOOT_SCRATCH_COLD8
+ * Bit[31] reserved for FSBL to check DBE is triggered (set by SDM to "1") ?
+ *
+ * Bit[30] reserved for FSBL to update the DDR init progress
+
+ * 1 - means in progress, 0 - haven't started / DDR is up running.
+ *
+ * Bit[19] store ATF CPU0 ON OFF value.
+ *
+ * Bit[18] reserved for SDM to configure ACF
+ * Bit[17:1] - Setting by Linux EDAC.
+ * Bit[1](ECC_OCRAM), Bit[16](ECC_DDR0), Bit[17](ECC_DDR1)
+ */
+#define ALT_SYSMGR_SCRATCH_REG_8_DDR_DBE_MASK	BIT(31)
+#define ALT_SYSMGR_SCRATCH_REG_8_DDR_PROGRESS_MASK	BIT(30)
+#define ALT_SYSMGR_SCRATCH_REG_8_OCRAM_DBE_MASK		BIT(29)
+#define ALT_SYSMGR_SCRATCH_REG_8_IO96B_HPS_MASK		GENMASK(28, 27)
+#define SYSMGR_SCRATCH_REG_8_ACF_DDR_RATE_MASK	BIT(18)
+#define SYSMGR_SCRATCH_REG_8_ACF_DDR_RATE_SHIFT 18
 
 #define SYSMGR_SDMMC				SYSMGR_SOC64_SDMMC
 

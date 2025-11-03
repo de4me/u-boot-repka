@@ -152,12 +152,14 @@ ARM ALTERA SOCFPGA
 M:	Marek Vasut <marex@denx.de>
 M:	Simon Goldschmidt <simon.k.r.goldschmidt@gmail.com>
 M:	Tien Fong Chee <tien.fong.chee@altera.com>
-M:	Tingting Meng <tingting.meng@altera.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-socfpga.git
-F:	drivers/ddr/altera/
+F:	arch/arm/dts/socfpga_*
 F:	arch/arm/mach-socfpga/
-F:	configs/socfpga_agilex5_vab_defconfig
+F:	board/intel/agilex-socdk/
+F:	configs/socfpga_*
+F:	drivers/ddr/altera/
+F:	drivers/power/domain/altr-pmgr-agilex5.c
 F:	drivers/sysreset/sysreset_socfpga*
 
 ARM AMLOGIC SOC SUPPORT
@@ -344,7 +346,6 @@ F:	drivers/spi/gxp_spi.c
 
 ARM IPQ40XX
 M:	Robert Marko <robert.marko@sartura.hr>
-M:	Luka Perkov <luka.perkov@sartura.hr>
 S:	Maintained
 F:	arch/arm/mach-ipq40xx/
 F:	include/dt-bindings/clock/qcom,gcc-ipq4019.h
@@ -409,6 +410,7 @@ ARM MEDIATEK
 M:	Ryder Lee <ryder.lee@mediatek.com>
 M:	Weijie Gao <weijie.gao@mediatek.com>
 M:	Chunfeng Yun <chunfeng.yun@mediatek.com>
+M:	Igor Belwon <igor.belwon@mentallysanemainliners.org>
 R:	GSS_MTK_Uboot_upstream <GSS_MTK_Uboot_upstream@mediatek.com>
 S:	Maintained
 F:	arch/arm/mach-mediatek/
@@ -421,6 +423,8 @@ F:	drivers/clk/mediatek/
 F:	drivers/cpu/mtk_cpu.c
 F:	drivers/i2c/mtk_i2c.c
 F:	drivers/mmc/mtk-sd.c
+F:	drivers/net/mtk_eth/
+F:	drivers/net/phy/mediatek/
 F:	drivers/phy/phy-mtk-*
 F:	drivers/pinctrl/mediatek/
 F:	drivers/power/domain/mtk-power-domain.c
@@ -432,11 +436,10 @@ F:	drivers/spi/mtk_snfi_spi.c
 F:	drivers/spi/mtk_spim.c
 F:	drivers/spi/mtk_snor.c
 F:	drivers/timer/mtk_timer.c
+F:	drivers/ufs/ufs-mediatek*
 F:	drivers/usb/host/xhci-mtk.c
 F:	drivers/usb/mtu3/
 F:	drivers/watchdog/mtk_wdt.c
-F:	drivers/net/mtk_eth.c
-F:	drivers/net/mtk_eth.h
 F:	drivers/reset/reset-mediatek.c
 F:	drivers/serial/serial_mtk.c
 F:	include/dt-bindings/clock/mediatek,*
@@ -574,6 +577,7 @@ F:	drivers/mmc/rockchip_dw_mmc.c
 F:	drivers/pinctrl/rockchip/
 F:	drivers/ram/rockchip/
 F:	drivers/sysreset/sysreset_rockchip.c
+F:	drivers/ufs/*rockchip*
 F:	drivers/video/rockchip/
 F:	tools/rkcommon.c
 F:	tools/rkcommon.h
@@ -602,6 +606,7 @@ ARM SAMSUNG EXYNOS850 SOC
 M:	Sam Protsenko <semen.protsenko@linaro.org>
 S:	Maintained
 F:	drivers/clk/exynos/clk-exynos850.c
+F:	drivers/phy/phy-exynos-usbdrd.c
 F:	drivers/pinctrl/exynos/pinctrl-exynos850.c
 
 ARM SAMSUNG SOC DRIVERS
@@ -653,7 +658,7 @@ F:	include/dt-bindings/pinctrl/adi-adsp.h
 F:	include/env/adi/
 
 ARM SNAPDRAGON
-M:	Caleb Connolly <caleb.connolly@linaro.org>
+M:	Casey Connolly <casey.connolly@linaro.org>
 M:	Neil Armstrong <neil.armstrong@linaro.org>
 R:	Sumit Garg <sumit.garg@kernel.org>
 L:	u-boot-qcom@groups.io
@@ -706,6 +711,7 @@ F:	drivers/gpio/stm32_gpio.c
 F:	drivers/hwspinlock/stm32_hwspinlock.c
 F:	drivers/i2c/stm32f7_i2c.c
 F:	drivers/mailbox/stm32-ipcc.c
+F:	drivers/memory/stm32-omm.c
 F:	drivers/misc/stm32mp_fuse.c
 F:	drivers/misc/stm32_rcc.c
 F:	drivers/mmc/stm32_sdmmc2.c
@@ -722,6 +728,7 @@ F:	drivers/rng/optee_rng.c
 F:	drivers/rng/stm32_rng.c
 F:	drivers/rtc/stm32_rtc.c
 F:	drivers/serial/serial_stm32.*
+F:	drivers/spi/stm32_ospi.c
 F:	drivers/spi/stm32_qspi.c
 F:	drivers/spi/stm32_spi.c
 F:	drivers/video/stm32/stm32_ltdc.c
@@ -730,7 +737,6 @@ F:	include/dt-bindings/clock/stm32fx-clock.h
 F:	include/dt-bindings/clock/stm32mp*
 F:	include/dt-bindings/pinctrl/stm32-pinfunc.h
 F:	include/dt-bindings/reset/stm32mp*
-F:	include/stm32-reset-core.h
 F:	include/stm32_rcc.h
 F:	tools/logos/st.bmp
 F:	tools/stm32image.c
@@ -1093,7 +1099,7 @@ F:	drivers/core/
 F:	include/dm/
 F:	test/dm/
 
-EFI APP
+EFI CLIENT
 M:	Simon Glass <sjg@chromium.org>
 M:	Heinrich Schuchardt <xypron.glpk@gmx.de>
 S:	Maintained
@@ -1103,11 +1109,11 @@ F:	configs/efi-x86_app*
 F:	doc/develop/uefi/u-boot_on_efi.rst
 F:	drivers/block/efi-media-uclass.c
 F:	drivers/block/sb_efi_media.c
-F:	lib/efi/efi_app.c
+F:	lib/efi_client/
 F:	scripts/build-efi.sh
 F:	test/dm/efi_media.c
 
-EFI PAYLOAD
+EFI LOADER
 M:	Heinrich Schuchardt <xypron.glpk@gmx.de>
 M:	Ilias Apalodimas <ilias.apalodimas@linaro.org>
 S:	Maintained
@@ -1222,7 +1228,7 @@ S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-freebsd.git
 
 FREESCALE QORIQ
-M:	Priyanka Jain <priyanka.jain@nxp.com>
+M:	Peng Fan <peng.fan@nxp.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-fsl-qoriq.git
 F:	drivers/watchdog/sp805_wdt.c
@@ -1243,10 +1249,17 @@ F:	drivers/misc/gsc.c
 F:	include/gsc.h
 
 I2C
-M:	Heiko Schocher <hs@denx.de>
+M:	Heiko Schocher <hs@nabladev.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-i2c.git
 F:	drivers/i2c/
+
+I3C
+M:	Dinesh <dinesh.maniyam@altera.com>
+S:	Maintained
+T:	git https://source.denx.de/u-boot/u-boot.git
+F:	cmd/i3c.c
+F:	drivers/i3c/
 
 KWBIMAGE / KWBOOT TOOLS
 M:	Pali Rohár <pali@kernel.org>
@@ -1282,6 +1295,11 @@ S:	Supported
 T:	git git://github.com/ARM-software/u-boot.git
 F:	drivers/video/mali_dp.c
 F:	drivers/i2c/i2c-versatile.c
+
+MBEDTLS
+M:	Raymond Mao <raymondmaoca@gmail.com>
+S:	Maintained
+F:	lib/mbedtls/
 
 MEMBUF
 M:	Simon Glass <sjg@chromium.org>
@@ -1397,10 +1415,12 @@ M:	Jaehoon Chung <jh80.chung@samsung.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-mmc.git
 F:	drivers/mmc/
+N:	mmc
 
 NETWORK
 M:	Joe Hershberger <joe.hershberger@ni.com>
 M:	Ramon Fried <rfried.dev@gmail.com>
+M:	Jerome Forissier <jerome.forissier@linaro.org>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-net.git
 F:	drivers/net/
@@ -1410,6 +1430,7 @@ F:	net/
 NETWORK (LWIP)
 M:	Jerome Forissier <jerome.forissier@linaro.org>
 S:	Maintained
+T:	git https://source.denx.de/u-boot/custodians/u-boot-net.git
 F:	cmd/lwip/
 F:	cmd/net-lwip.c
 F:	configs/qemu_arm64_lwip_defconfig
@@ -1490,7 +1511,7 @@ F:	drivers/pci_endpoint/
 F:  include/pci_ep.h
 
 PCI MPC85xx
-M:	Heiko Schocher <hs@denx.de>
+M:	Heiko Schocher <hs@nabladev.com>
 S:	Maintained
 F:	drivers/pci/pci_mpc85xx.c
 
@@ -1502,6 +1523,7 @@ F:	test/cmd/pci_mps.c
 
 POWER
 M:	Jaehoon Chung <jh80.chung@samsung.com>
+M:	Peng Fan <peng.fan@nxp.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-pmic.git
 F:	drivers/power/
@@ -1606,6 +1628,13 @@ F:	doc/arch/sandbox.rst
 F:	drivers/*/*sandbox*.c
 F:	include/dt-bindings/*/sandbox*.h
 F:	include/os.h
+
+SCMI
+M:	Peng Fan <peng.fan@nxp.com>
+S:	Maintained
+F:	drivers/firmware/scmi/
+F:	include/scmi*
+N:	scmi
 
 SEAMA
 M:	Linus Walleij <linus.walleij@linaro.org>
@@ -1787,13 +1816,13 @@ F:	lib/optee
 
 UBI
 M:	Kyungmin Park <kmpark@infradead.org>
-M:	Heiko Schocher <hs@denx.de>
+M:	Heiko Schocher <hs@nabladev.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-ubi.git
 F:	drivers/mtd/ubi/
 
 UFETCH
-M:	Caleb Connolly <caleb.connolly@linaro.org>
+M:	Casey Connolly <casey.connolly@linaro.org>
 S:	Maintained
 F:	cmd/ufetch.c
 
@@ -1865,7 +1894,7 @@ F:	common/spl_reloc.c
 F:	include/vbe.h
 
 VIDEO
-M:	Anatolij Gustschin <agust@denx.de>
+M:	Anatolij Gustschin <ag.dev.uboot@gmail.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-video.git
 F:	drivers/video/

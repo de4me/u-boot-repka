@@ -18,6 +18,7 @@
 #include <malloc.h>
 #include <mapmem.h>
 #include <string.h>
+#include <linux/stringify.h>
 #include <asm/cache.h>
 
 /* Length of env var "BOOT_*_LEFT" */
@@ -52,6 +53,18 @@ struct distro_rauc_priv {
 	struct distro_rauc_slot **slots;
 };
 
+static void distro_rauc_priv_free(struct distro_rauc_priv *priv)
+{
+	int i;
+
+	for (i = 0; priv->slots[i]; i++) {
+		free(priv->slots[i]->name);
+		free(priv->slots[i]);
+	}
+	free(priv->slots);
+	free(priv);
+}
+
 static struct distro_rauc_slot *get_slot(struct distro_rauc_priv *priv,
 					 const char *slot_name)
 {
@@ -79,18 +92,17 @@ static int distro_rauc_check(struct udevice *dev, struct bootflow_iter *iter)
 	return 0;
 }
 
-static int distro_rauc_scan_boot_part(struct bootflow *bflow)
+static int distro_rauc_scan_parts(struct bootflow *bflow)
 {
 	struct blk_desc *desc;
 	struct distro_rauc_priv *priv;
 	char *boot_order;
 	const char **boot_order_list;
-	bool exists;
 	int ret;
 	int i;
-	int j;
 
-	desc = dev_get_uclass_plat(bflow->blk);
+	if (bflow->blk)
+		desc = dev_get_uclass_plat(bflow->blk);
 
 	priv = bflow->bootmeth_priv;
 	if (!priv || !priv->slots)
@@ -99,20 +111,21 @@ static int distro_rauc_scan_boot_part(struct bootflow *bflow)
 	boot_order = env_get("BOOT_ORDER");
 	boot_order_list = str_to_list(boot_order);
 	for (i = 0; boot_order_list[i]; i++) {
-		exists = false;
-		for (j = 0; script_names[j]; j++) {
-			const struct distro_rauc_slot *slot;
+		const struct distro_rauc_slot *slot;
 
-			slot = get_slot(priv, boot_order_list[i]);
-			if (!slot)
-				return log_msg_ret("env", -ENOENT);
+		slot = get_slot(priv, boot_order_list[i]);
+		if (!slot)
+			return log_msg_ret("slot", -EINVAL);
+		if (desc) {
 			ret = fs_set_blk_dev_with_part(desc, slot->boot_part);
 			if (ret)
-				return log_msg_ret("blk", ret);
-			exists |= fs_exists(script_names[j]);
+				return log_msg_ret("part", ret);
+			fs_close();
+			ret = fs_set_blk_dev_with_part(desc, slot->root_part);
+			if (ret)
+				return log_msg_ret("part", ret);
+			fs_close();
 		}
-		if (!exists)
-			return log_msg_ret("fs", -ENOENT);
 	}
 	str_free_list(boot_order_list);
 
@@ -168,28 +181,27 @@ static int distro_rauc_read_bootflow(struct udevice *dev, struct bootflow *bflow
 	     (slot = strsep(&boot_order_copy, " "));
 	     i++) {
 		struct distro_rauc_slot *s;
+		struct distro_rauc_slot **new_slots;
 
 		s = calloc(1, sizeof(struct distro_rauc_slot));
 		s->name = strdup(slot);
 		s->boot_part = simple_strtoul(strsep(&parts, ","), NULL, 10);
 		s->root_part = simple_strtoul(strsep(&parts, ","), NULL, 10);
-		priv->slots = realloc(priv->slots, (i + 1) *
-				      sizeof(struct distro_rauc_slot));
+		new_slots = realloc(priv->slots, (i + 1) *
+				    sizeof(struct distro_rauc_slot));
+		if (!new_slots)
+			return log_msg_ret("buf", -ENOMEM);
+		priv->slots = new_slots;
 		priv->slots[i - 1] = s;
-		priv->slots[i]->name = NULL;
+		priv->slots[i] = NULL;
 	}
 
 	bflow->bootmeth_priv = priv;
 
-	ret = distro_rauc_scan_boot_part(bflow);
+	ret = distro_rauc_scan_parts(bflow);
 	if (ret < 0) {
-		for (i = 0; priv->slots[i]->name; i++) {
-			free(priv->slots[i]->name);
-			free(priv->slots[i]);
-		}
-		free(priv);
+		distro_rauc_priv_free(priv);
 		free(boot_order_copy);
-		bflow->bootmeth_priv = NULL;
 		return ret;
 	}
 
@@ -293,7 +305,7 @@ static int find_active_slot(char **slot_name, ulong *slot_tries)
 	if (!slot_found) {
 		if (IS_ENABLED(CONFIG_BOOTMETH_RAUC_RESET_ALL_ZERO_TRIES)) {
 			log_warning("WARNING: No valid slot found\n");
-			log_info("INFO: Resetting boot order and all slot tries\n");
+			log_info("INFO: Resetting all slot tries to " __stringify(CONFIG_BOOTMETH_RAUC_DEFAULT_TRIES) "\n");
 			boot_order_list = str_to_list(CONFIG_BOOTMETH_RAUC_BOOT_ORDER);
 			for (i = 0; boot_order_list[i]; i++) {
 				sprintf(boot_left, "BOOT_%s_LEFT", boot_order_list[i]);
@@ -398,6 +410,8 @@ static int distro_rauc_boot(struct udevice *dev, struct bootflow *bflow)
 	if (ret)
 		return log_msg_ret("boot", ret);
 
+	distro_rauc_priv_free(priv);
+
 	return 0;
 }
 
@@ -406,7 +420,7 @@ static int distro_rauc_bootmeth_bind(struct udevice *dev)
 	struct bootmeth_uc_plat *plat = dev_get_uclass_plat(dev);
 
 	plat->desc = "RAUC distro boot from MMC";
-	plat->flags = BOOTMETHF_GLOBAL;
+	plat->flags = BOOTMETHF_ANY_PART;
 
 	return 0;
 }

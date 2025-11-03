@@ -120,8 +120,13 @@ int __weak booti_setup(ulong image, ulong *relocated_addr, ulong *size, bool for
 }
 #endif
 
-/* Weak default function for arch/board-specific fixups to the spl_image_info */
-void __weak spl_perform_fixups(struct spl_image_info *spl_image)
+/* Weak default function for arch specific fixups to the spl_image_info */
+void __weak spl_perform_arch_fixups(struct spl_image_info *spl_image)
+{
+}
+
+/* Weak default function for board specific fixups to the spl_image_info */
+void __weak spl_perform_board_fixups(struct spl_image_info *spl_image)
 {
 }
 
@@ -278,8 +283,8 @@ void spl_set_header_raw_uboot(struct spl_image_info *spl_image)
 	} else {
 		spl_image->entry_point = CONFIG_SYS_UBOOT_START;
 		spl_image->load_addr = CONFIG_TEXT_BASE;
-		log_debug("Default load addr %x (u_boot_pos=%lx)\n",
-			  CONFIG_TEXT_BASE, u_boot_pos);
+		log_debug("Default load addr %lx (u_boot_pos=%lx)\n",
+			  spl_image->load_addr, u_boot_pos);
 	}
 	spl_image->os = IH_OS_U_BOOT;
 	spl_image->name = xpl_name(xpl_next_phase());
@@ -634,7 +639,7 @@ static int boot_from_devices(struct spl_image_info *spl_image,
 		if (CONFIG_IS_ENABLED(SHOW_ERRORS))
 			ret = -ENXIO;
 		for (loader = drv; loader != drv + n_ents; loader++) {
-			if (bootdev != loader->boot_device)
+			if (loader && bootdev != loader->boot_device)
 				continue;
 			if (!CONFIG_IS_ENABLED(SILENT_CONSOLE)) {
 				if (loader)
@@ -692,6 +697,7 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 	spl_jump_to_image_t jumper = &jump_to_image;
 	struct spl_image_info spl_image;
 	int ret, os;
+	void *fdt;
 
 	debug(">>" PHASE_PROMPT "board_init_r()\n");
 
@@ -775,7 +781,8 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 		hang();
 	}
 
-	spl_perform_fixups(&spl_image);
+	spl_perform_arch_fixups(&spl_image);
+	spl_perform_board_fixups(&spl_image);
 
 	os = spl_image.os;
 	if (os == IH_OS_U_BOOT) {
@@ -793,9 +800,13 @@ void board_init_r(gd_t *dummy1, ulong dummy2)
 		jumper = &spl_invoke_opensbi;
 	} else if (CONFIG_IS_ENABLED(OS_BOOT) && os == IH_OS_LINUX) {
 		debug("Jumping to Linux\n");
-		if (IS_ENABLED(CONFIG_SPL_OS_BOOT))
-			spl_fixup_fdt((void *)SPL_PAYLOAD_ARGS_ADDR);
+		if (CONFIG_IS_ENABLED(OS_BOOT_ARGS))
+			fdt = (void *)SPL_PAYLOAD_ARGS_ADDR;
+		else
+			fdt = spl_image_fdt_addr(&spl_image);
+		spl_fixup_fdt(fdt);
 		spl_board_prepare_for_linux();
+		spl_image.arg = fdt;
 		jumper = &jump_to_image_linux;
 	} else {
 		debug("Unsupported OS image.. Jumping nevertheless..\n");

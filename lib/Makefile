@@ -5,7 +5,7 @@
 
 ifndef CONFIG_XPL_BUILD
 
-obj-$(CONFIG_EFI) += efi/
+obj-$(CONFIG_EFI_CLIENT) += efi_client/
 obj-$(CONFIG_EFI_LOADER) += efi_driver/
 obj-$(CONFIG_EFI_LOADER) += efi_loader/
 obj-$(CONFIG_CMD_BOOTEFI_SELFTEST) += efi_selftest/
@@ -21,6 +21,8 @@ obj-$(CONFIG_OPTEE_LIB) += optee/
 obj-$(CONFIG_AES) += aes.o
 obj-$(CONFIG_AES) += aes/
 obj-$(CONFIG_$(PHASE_)BINMAN_FDT) += binman.o
+
+obj-$(CONFIG_FW_LOADER) += fw_loader.o
 
 ifndef API_BUILD
 ifneq ($(CONFIG_CHARSET),)
@@ -159,7 +161,7 @@ obj-$(CONFIG_LIB_ELF) += elf.o
 
 obj-$(CONFIG_$(PHASE_)SEMIHOSTING) += semihosting.o
 
-obj-$(CONFIG_UTHREAD) += uthread.o
+obj-$(CONFIG_$(PHASE_)UTHREAD) += uthread.o
 
 #
 # Build a fast OID lookup registry from include/linux/oid_registry.h

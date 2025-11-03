@@ -57,6 +57,7 @@ static void announce_and_cleanup(int fake)
 #ifdef CONFIG_BOOTSTAGE_FDT
 	bootstage_fdt_add_report();
 #endif
+	bootstage_stash_default();
 #ifdef CONFIG_BOOTSTAGE_REPORT
 	bootstage_report();
 #endif
@@ -183,7 +184,7 @@ __weak void setup_board_tags(struct tag **in_params) {}
 static void do_nonsec_virt_switch(void)
 {
 	smp_kick_all_cpus();
-	dcache_disable();	/* flush cache before swtiching to EL2 */
+	dcache_disable();	/* flush cache before switching to EL2 */
 }
 #endif
 

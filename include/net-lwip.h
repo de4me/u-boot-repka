@@ -18,6 +18,8 @@ extern size_t cacert_size;
 extern enum auth_mode cacert_auth_mode;
 extern bool cacert_initialized;
 
+extern int net_try_count;
+
 int set_cacert_builtin(void);
 
 enum proto_t {
@@ -48,7 +50,6 @@ int net_lwip_dns_resolve(char *name_or_ip, ip_addr_t *ip);
  */
 bool wget_validate_uri(char *uri);
 
-int do_dhcp(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[]);
 int do_dns(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[]);
 int do_wget(struct cmd_tbl *cmdtp, int flag, int argc, char * const argv[]);
 

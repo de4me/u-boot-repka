@@ -351,6 +351,8 @@ config MTK_SPIM
 
 config MVEBU_A3700_SPI
 	bool "Marvell Armada 3700 SPI driver"
+	depends on ARCH_MVEBU && ARM64
+	select CLK_MVEBU
 	select CLK_ARMADA_3720
 	help
 	  Enable the Marvell Armada 3700 SPI driver. This driver can be
@@ -450,6 +452,7 @@ config ROCKCHIP_SFC
 
 config ROCKCHIP_SPI
 	bool "Rockchip SPI driver"
+	depends on ARCH_ROCKCHIP
 	help
 	  Enable the Rockchip SPI driver, used to access SPI NOR flash and
 	  other SPI peripherals (such as the Chrome OS EC) on Rockchip SoCs.
@@ -493,7 +496,7 @@ config SANDBOX_SPI_MAX_CS
 
 config SPI_ASPEED_SMC
 	bool "ASPEED SPI flash controller driver"
-	depends on DM_SPI && SPI_MEM
+	depends on DM_SPI && SPI_MEM && ARCH_ASPEED
 	help
 	  Enable ASPEED SPI flash controller driver for AST2500
 	  and AST2600 SoCs.
@@ -527,6 +530,14 @@ config SPI_SUNXI
 	  Enable the Allwinner SoC SPi controller driver.
 
 	  Same controller driver can reuse in all Allwinner SoC variants.
+
+config STM32_OSPI
+	bool "STM32MP2 OSPI driver"
+	depends on STM32MP25X && STM32_OMM
+	help
+	  Enable the STM32MP2 Octo-SPI (OSPI) driver. This driver can be
+	  used to access the SPI NOR flash chips on platforms embedding
+	  this ST IP core.
 
 config STM32_QSPI
 	bool "STM32F7 QSPI driver"
@@ -612,6 +623,7 @@ config ZYNQ_SPI
 
 config ZYNQ_QSPI
 	bool "Zynq QSPI driver"
+	depends on ARCH_VERSAL || ARCH_VERSAL_NET || ARCH_VERSAL2 || ARCH_ZYNQ || ARCH_ZYNQMP
 	imply SPI_FLASH_BAR
 	help
 	  Enable the Zynq Quad-SPI (QSPI) driver. This driver can be
@@ -621,6 +633,7 @@ config ZYNQ_QSPI
 
 config ZYNQMP_GQSPI
 	bool "Configure ZynqMP Generic QSPI"
+	depends on ARCH_VERSAL || ARCH_VERSAL_NET || ARCH_VERSAL2 || ARCH_ZYNQ || ARCH_ZYNQMP
 	help
 	  This option is used to enable ZynqMP QSPI controller driver which
 	  is used to communicate with qspi flash devices.

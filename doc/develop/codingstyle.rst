@@ -12,8 +12,9 @@ or only minimal changes.
 The following rules apply:
 
 * All contributions to U-Boot should conform to the `Linux kernel
-  coding style <https://www.kernel.org/doc/html/latest/process/coding-style.html>`_
-  and the `Lindent script <https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/scripts/Lindent>`_.
+  coding style <https://www.kernel.org/doc/html/latest/process/coding-style.html>`_.
+  U-Boot includes a `.clang-format` configuration file that can be used to
+  automatically format code according to these standards.
   * The exception for net files to the `multi-line comment
   <https://www.kernel.org/doc/html/latest/process/coding-style.html#commenting>`_
   applies only to Linux, not to U-Boot. Only large hunks which are copied
@@ -23,13 +24,131 @@ The following rules apply:
   <https://peps.python.org/pep-0008/>`_. Use `pylint
   <https://github.com/pylint-dev/pylint>`_ for checking the code.
 
-* Use patman to send your patches (``tools/patman/patman -H`` for full
-  instructions). With a few tags in your commits this will check your patches
-  and take care of emailing them.
+* Use the `b4 <https://git.kernel.org/pub/scm/utils/b4/b4.git/>`_ tool to prepare and
+  send your patches. b4 has become the preferred tool to sending patches for many
+  Linux kernel contributors, and U-Boot ships with a ready-to-use ``.b4-config`` that
+  targets ``u-boot@lists.denx.de`` and integrates with ``scripts/get_maintainer.pl`` for
+  recipient discovery.
 
-* If you don't use patman, make sure to run ``scripts/checkpatch.pl``. For
-  more information, read :doc:`checkpatch`. Note that this should be done
-  *before* posting on the mailing list!
+  Start a topical series with ``b4 prep`` and keep the commits organised with
+  ``git rebase -i``. ``b4 prep --edit-cover`` opens an editor for the cover
+  letter, while ``b4 prep --auto-to-cc`` collects reviewers and maintainers from
+  both the configuration file and ``scripts/get_maintainer.pl``.
+
+  .. code-block:: bash
+
+     b4 prep -n mmc-fixes
+     git rebase -i origin/master
+     b4 prep --edit-cover
+     b4 prep --auto-to-cc
+
+  Run the style checks before sending. ``b4 prep --check`` wraps the existing
+  tooling so you see the output from ``scripts/checkpatch.pl`` alongside b4's
+  own validation. You can always invoke ``scripts/checkpatch.pl`` directly for
+  additional runs.
+
+  .. code-block:: bash
+
+     b4 prep --check
+
+  When the series is ready, use ``b4 send``. Begin with ``--dry-run`` to review
+  the generated emails and ``--reflect`` to copy yourself for records before
+  dispatching to ``u-boot@lists.denx.de``.
+
+  .. code-block:: bash
+
+     b4 send --dry-run
+     b4 send --reflect
+     b4 send
+
+  After reviews arrive, collect Acked-by/Tested-by tags with ``b4 trailers -u``
+  and fold them into your commits before resending the updated series.
+
+  .. code-block:: bash
+
+     b4 trailers -u
+     git rebase -i origin/master
+     b4 send
+
+* Run ``scripts/checkpatch.pl`` directly or via ``b4 prep --check`` so that all
+  issues are resolved *before* posting on the mailing list. For more information,
+  read :doc:`checkpatch`.
+
+Code Formatting with clang-format
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+U-Boot provides a `.clang-format` configuration file that was copied directly
+from the Linux kernel without any modifications, ensuring complete compatibility
+with kernel coding standards. Here are common ways to use clang-format:
+
+**Basic usage for single files:**
+
+.. code-block:: bash
+
+   clang-format -style=file -i <file>
+
+**Format multiple files:**
+
+.. code-block:: bash
+
+   find . -name '*.c' -o -name '*.h' | xargs clang-format -style=file -i
+
+**Integration with git (format only staged changes):**
+
+.. code-block:: bash
+
+   git clang-format
+
+**Editor integration examples:**
+
+* **Vim/Neovim:** Install vim-clang-format plugin
+* **Emacs:** Use clang-format.el
+* **VSCode:** Install "Clang-Format" extension
+* **Most IDEs:** Have built-in or plugin support for clang-format
+
+The `.clang-format` file in the repository root ensures consistent formatting
+across the entire codebase and aligns with Linux kernel coding standards.
+
+**Disabling clang-format for specific code blocks:**
+
+In some cases, you may want to disable automatic formatting for specific code
+sections, such as carefully formatted tables, assembly code, or imported code
+from other projects. Use the following comments to control formatting:
+
+.. code-block:: c
+
+   // clang-format off
+   static const struct register_config regs[] = {
+       { 0x1000, 0x12345678 },  // Base address register
+       { 0x1004, 0xabcdef00 },  // Control register
+       { 0x1008, 0x00000001 },  // Status register
+   };
+   // clang-format on
+
+**Controversial aspects of coding style enforcement:**
+
+Coding style enforcement can be controversial, and it's difficult to have one
+configuration that satisfies everyone's personal preferences. The goal of using
+clang-format is consistency across the codebase rather than accommodating
+individual preferences. While some developers may disagree with specific
+formatting choices, maintaining a uniform style throughout the project makes
+code more readable and maintainable for the entire development community.
+
+**Best practices for formatting:**
+
+When using clang-format to format code, consider these best practices:
+
+* **Format only changed blocks:** It's preferred to format only the blocks of
+  code that have been modified rather than entire files. This keeps diffs
+  focused on actual changes and makes code reviews easier.
+
+* **Separate formatting commits:** If you need to format entire files, create
+  a separate commit containing only formatting changes. This allows reviewers
+  to easily distinguish between functional changes and pure formatting updates.
+
+* **Use git clang-format:** The ``git clang-format`` command is particularly
+  useful as it formats only the lines that have been modified in your current
+  changes, avoiding unnecessary formatting of unchanged code.
 
 * Source files originating from different projects (for example the MTD
   subsystem or the hush shell code from the BusyBox project) may, after

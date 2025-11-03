@@ -481,7 +481,7 @@ config ENV_IS_IN_UBI
 config ENV_REDUNDANT
 	bool "Enable redundant environment support"
 	help
-	  Normally, the environemt is stored in a single location.  By
+	  Normally, the environment is stored in a single location.  By
 	  selecting this option, you can then define where to hold a redundant
 	  copy of the environment data, so that there is a valid backup copy in
 	  case there is a power failure during a "saveenv" operation.
@@ -497,7 +497,7 @@ config ENV_FAT_INTERFACE
 	  Define this to a string that is the name of the block device.
 
 config ENV_FAT_DEVICE_AND_PART
-	string "Device and partition for where to store the environemt in FAT"
+	string "Device and partition for where to store the environment in FAT"
 	depends on ENV_IS_IN_FAT
 	default "0:1" if TI_COMMON_CMD_OPTIONS
 	default "0:auto" if ARCH_ZYNQ || ARCH_ZYNQMP || ARCH_VERSAL || ARCH_VERSAL_NET || ARCH_VERSAL2
@@ -545,7 +545,7 @@ config ENV_EXT4_INTERFACE
 	  Define this to a string that is the name of the block device.
 
 config ENV_EXT4_DEVICE_AND_PART
-	string "Device and partition for where to store the environemt in EXT4"
+	string "Device and partition for where to store the environment in EXT4"
 	depends on ENV_IS_IN_EXT4
 	help
 	  Define this to a string to specify the partition of the device. It can
@@ -635,7 +635,7 @@ config ENV_OFFSET_REDUND
 
 config ENV_OFFSET_REDUND_RELATIVE_END
 	bool "Offset is relative to the end of the partition"
-	depends on SYS_REDUNDAND_ENVIRONMENT
+	depends on ENV_REDUNDANT
 	depends on ENV_IS_IN_MMC
 	help
 	  Treat the redundant environment offset as relative to the end of the
@@ -732,7 +732,7 @@ config ENV_MMC_USE_SW_PARTITION
 	depends on ENV_IS_IN_MMC
 
 config ENV_MMC_SW_PARTITION
-	bool "SD/MMC environment software partition name"
+	string "SD/MMC environment software partition name"
 	depends on ENV_MMC_USE_SW_PARTITION
 	help
 	  SD/MMC software partition name used to save environment variables.
@@ -827,12 +827,14 @@ if SPL_ENV_SUPPORT
 config SPL_ENV_IS_NOWHERE
 	bool "SPL Environment is not stored"
 	default y if ENV_IS_NOWHERE
+	default y if SPL_OS_BOOT_SECURE
 	help
 	  Similar to ENV_IS_NOWHERE, used for SPL environment.
 
 config SPL_ENV_IS_IN_MMC
 	bool "SPL Environment in an MMC device"
 	depends on !SPL_ENV_IS_NOWHERE
+	depends on !SPL_OS_BOOT_SECURE
 	depends on ENV_IS_IN_MMC
 	default y
 	help
@@ -841,6 +843,7 @@ config SPL_ENV_IS_IN_MMC
 config SPL_ENV_IS_IN_FAT
 	bool "SPL Environment is in a FAT filesystem"
 	depends on !SPL_ENV_IS_NOWHERE
+	depends on !SPL_OS_BOOT_SECURE
 	depends on ENV_IS_IN_FAT
 	default y
 	help
@@ -849,6 +852,7 @@ config SPL_ENV_IS_IN_FAT
 config SPL_ENV_IS_IN_EXT4
 	bool "SPL Environment is in a EXT4 filesystem"
 	depends on !SPL_ENV_IS_NOWHERE
+	depends on !SPL_OS_BOOT_SECURE
 	depends on ENV_IS_IN_EXT4
 	default y
 	help
@@ -857,6 +861,7 @@ config SPL_ENV_IS_IN_EXT4
 config SPL_ENV_IS_IN_NAND
 	bool "SPL Environment in a NAND device"
 	depends on !SPL_ENV_IS_NOWHERE
+	depends on !SPL_OS_BOOT_SECURE
 	depends on ENV_IS_IN_NAND
 	default y
 	help
@@ -865,6 +870,7 @@ config SPL_ENV_IS_IN_NAND
 config SPL_ENV_IS_IN_SPI_FLASH
 	bool "SPL Environment is in SPI flash"
 	depends on !SPL_ENV_IS_NOWHERE
+	depends on !SPL_OS_BOOT_SECURE
 	depends on ENV_IS_IN_SPI_FLASH
 	default y
 	help
@@ -873,6 +879,7 @@ config SPL_ENV_IS_IN_SPI_FLASH
 config SPL_ENV_IS_IN_FLASH
 	bool "SPL Environment in flash memory"
 	depends on !SPL_ENV_IS_NOWHERE
+	depends on !SPL_OS_BOOT_SECURE
 	depends on ENV_IS_IN_FLASH
 	default y
 	help
@@ -957,6 +964,7 @@ config USE_BOOTFILE
 
 config BOOTFILE
 	string "'bootfile' environment variable value"
+	default kernel.itb if SPL_ATF && TARGET_SOCFPGA_SOC64
 	depends on USE_BOOTFILE
 	help
 	  The value to set the "bootfile" variable to.
