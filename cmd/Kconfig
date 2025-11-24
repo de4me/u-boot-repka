@@ -284,6 +284,7 @@ config CMD_BOOTD
 config CMD_BOOTM
 	bool "bootm"
 	default y
+	select LIB_BOOTM
 	help
 	  Boot an application image from the memory.
 
@@ -360,6 +361,8 @@ config BOOTM_ELF
 
 config CMD_BOOTZ
 	bool "bootz"
+	select LIB_BOOTZ
+	select LIB_BOOTM
 	help
 	  Boot the Linux zImage
 
@@ -367,6 +370,8 @@ config CMD_BOOTI
 	bool "booti"
 	depends on ARM64 || RISCV || SANDBOX
 	default y
+	select LIB_BOOTI
+	select LIB_BOOTM
 	help
 	  Boot an AArch64 Linux Kernel image from memory.
 
@@ -544,9 +549,6 @@ config CMD_FDT
 	depends on OF_LIBFDT
 	help
 	  Do FDT related setup before booting into the Operating System.
-
-config SUPPORT_EXTENSION_SCAN
-	bool
 
 config CMD_EXTENSION
 	bool "Extension board management command"

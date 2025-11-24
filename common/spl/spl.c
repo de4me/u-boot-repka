@@ -340,7 +340,7 @@ int spl_parse_image_header(struct spl_image_info *spl_image,
 		panic("** no mkimage signature but raw image not supported");
 	}
 
-	if (CONFIG_IS_ENABLED(OS_BOOT) && IS_ENABLED(CONFIG_CMD_BOOTI)) {
+	if (IS_ENABLED(CONFIG_SPL_OS_BOOT) && IS_ENABLED(CONFIG_SPL_BOOTI)) {
 		ulong start, size;
 
 		if (!booti_setup((ulong)header, &start, &size, 0)) {
@@ -354,7 +354,8 @@ int spl_parse_image_header(struct spl_image_info *spl_image,
 			      spl_image->load_addr, spl_image->size);
 			return 0;
 		}
-	} else if (CONFIG_IS_ENABLED(OS_BOOT) && IS_ENABLED(CONFIG_CMD_BOOTZ)) {
+	} else if (IS_ENABLED(CONFIG_SPL_OS_BOOT) &&
+		   IS_ENABLED(CONFIG_SPL_BOOTZ)) {
 		ulong start, end;
 
 		if (!bootz_setup((ulong)header, &start, &end)) {
@@ -642,26 +643,26 @@ static int boot_from_devices(struct spl_image_info *spl_image,
 			if (loader && bootdev != loader->boot_device)
 				continue;
 			if (!CONFIG_IS_ENABLED(SILENT_CONSOLE)) {
-				if (loader)
-					printf("Trying to boot from %s\n",
-					       spl_loader_name(loader));
-				else if (CONFIG_IS_ENABLED(SHOW_ERRORS)) {
-					printf(PHASE_PROMPT
-					       "Unsupported Boot Device %d\n",
-					       bootdev);
-				} else {
-					puts(PHASE_PROMPT
-					     "Unsupported Boot Device!\n");
-				}
+				printf("Trying to boot from %s\n",
+				       spl_loader_name(loader));
 			}
-			if (loader) {
-				ret = spl_load_image(spl_image, loader);
-				if (!ret) {
-					spl_image->boot_device = bootdev;
-					return 0;
-				}
-				printf("Error: %d\n", ret);
+
+			ret = spl_load_image(spl_image, loader);
+			if (!ret) {
+				spl_image->boot_device = bootdev;
+				return 0;
 			}
+			printf("Error: %d\n", ret);
+		}
+
+		if (!CONFIG_IS_ENABLED(SILENT_CONSOLE)) {
+			if (CONFIG_IS_ENABLED(SHOW_ERRORS))
+				printf(PHASE_PROMPT
+				       "Unsupported Boot Device %d\n",
+				       bootdev);
+			else
+				printf(PHASE_PROMPT
+				       "Unsupported Boot Device!\n");
 		}
 	}
 
