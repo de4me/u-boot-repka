@@ -2,7 +2,7 @@
 # This Dockerfile is used to build an image containing basic stuff to be used
 # to build U-Boot and run our test suites.
 
-FROM ubuntu:jammy-20251001
+FROM ubuntu:jammy-20251013
 LABEL org.opencontainers.image.authors="Tom Rini <trini@konsulko.com>"
 LABEL org.opencontainers.image.description=" This image is for building U-Boot inside a container"
 
@@ -126,6 +126,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 	python3-pip \
 	python3-pyelftools \
 	python3-sphinx \
+	python3-tk \
 	python3-tomli \
 	python3-venv \
 	rpm2cpio \
@@ -220,7 +221,7 @@ RUN git clone git://git.savannah.gnu.org/grub.git /tmp/grub && \
 
 RUN git clone https://gitlab.com/qemu-project/qemu.git /tmp/qemu && \
 	cd /tmp/qemu && \
-	git checkout v10.0.2 && \
+	git checkout v10.0.6 && \
 	# config user.name and user.email to make 'git am' happy
 	git config user.name u-boot && \
 	git config user.email u-boot@denx.de && \
@@ -310,17 +311,19 @@ RUN git clone https://github.com/stefanberger/swtpm /tmp/swtpm && \
 
 # Build trace-cmd
 RUN mkdir /tmp/trace && \
-    git clone https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git /tmp/trace/libtraceevent && \
+    git clone --depth=1 https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git /tmp/trace/libtraceevent \
+	-b libtraceevent-1.8.6 && \
     cd /tmp/trace/libtraceevent && \
-    make -j$(nproc) && \
+    make && \
     sudo make install && \
-    git clone https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git /tmp/trace/libtracefs && \
+    git clone --depth=1 https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git /tmp/trace/libtracefs \
+	-b libtracefs-1.8.2 && \
     cd /tmp/trace/libtracefs && \
-    make -j$(nproc) && \
+    make && \
     sudo make install && \
     git clone https://github.com/rostedt/trace-cmd.git /tmp/trace/trace-cmd && \
     cd /tmp/trace/trace-cmd && \
-    make -j$(nproc) && \
+    make && \
     sudo make install && \
     rm -rf /tmp/trace
 

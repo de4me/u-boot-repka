@@ -315,14 +315,16 @@ Environment variables
 
 The following environment variables are set when running hook scripts:
 
-- ``UBOOT_BOARD_TYPE`` the board type being tested.
-- ``UBOOT_BOARD_IDENTITY`` the board identity being tested, or ``na`` if none
+- ``U_BOOT_BOARD_TYPE`` the board type being tested.
+- ``U_BOOT_BOARD_TYPE_EXTRA`` the 2nd board type being tested, if applicable.
+- ``U_BOOT_BOARD_IDENTITY`` the board identity being tested, or ``na`` if none
   was specified.
-- ``UBOOT_SOURCE_DIR`` the U-Boot source directory.
-- ``UBOOT_TEST_PY_DIR`` the full path to ``test/py/`` in the source directory.
-- ``UBOOT_BUILD_DIR`` the U-Boot build directory.
-- ``UBOOT_RESULT_DIR`` the test result directory.
-- ``UBOOT_PERSISTENT_DATA_DIR`` the test persistent data directory.
+- ``U_BOOT_SOURCE_DIR`` the U-Boot source directory.
+- ``U_BOOT_TEST_PY_DIR`` the full path to ``test/py/`` in the source directory.
+- ``U_BOOT_BUILD_DIR`` the U-Boot build directory.
+- ``U_BOOT_BUILD_DIR_EXTRA`` the 2nd U-Boot build directory, if applicable.
+- ``U_BOOT_RESULT_DIR`` the test result directory.
+- ``U_BOOT_PERSISTENT_DATA_DIR`` the test persistent data directory.
 
 u-boot-test-console
 '''''''''''''''''''
@@ -544,7 +546,7 @@ either of ``CONFIG_NET`` or ``CONFIG_NET_LWIP`` is set:
 
 .. code-block:: python
 
-    @pytest.mark.buildconfigspec('net', 'net lwip')
+    @pytest.mark.buildconfigspec('net', 'net_lwip')
 
 The ``notbuildconfigspec()`` annotation can be used to require a configuration
 option not to be set. The following annotation requires ``CONFIG_RISCV=n``:
