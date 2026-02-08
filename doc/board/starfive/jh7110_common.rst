@@ -232,15 +232,10 @@ pull-down.
 RGPIO1 RGPIO0 StarFive loader function @ 0x2A00_0000
 ====== ====== ======================================
 0      0      1-bit QSPI Flash offset 0x0
-0      1      SDIO3.0
-1      0      eMMC5.0 or eMMC5.1
+0      1      SDIO3.0 *(deprecated)*
+1      0      eMMC5.0 or eMMC5.1 *(deprecated)*
 1      1      UART Serial XMODEM loader
 ====== ====== ======================================
-
-Booting from SD-card or eMMC is only available on boards that have separate
-switches for RGPIO0 and RGPIO1 (Milk-V Mars, StarFive VisionFive 2, Pine64
-Star64). Due to reported compatibility issues with some SD-cards it is
-considered deprecated by StarFive.
 
 According to `JH-7110 Boot User Guide BootROM`_ the StarFive loader code reads
 content to SRAM @ 0x0800_0000 from different media selected by [RGPIO1,RGPIO0].

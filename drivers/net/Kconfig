@@ -423,7 +423,7 @@ config FEC_MXC_MDIO_BASE
 
 config FEC_MXC
 	bool "FEC Ethernet controller"
-	depends on MX28 || MX5 || MX6 || MX7 || IMX8 || IMX8M || IMX8ULP || IMX93 || VF610
+	depends on MX28 || MX5 || MX6 || MX7 || IMX8 || IMX8M || IMX8ULP || IMX91 || IMX93 || VF610
 	help
 	  This driver supports the 10/100 Fast Ethernet controller for
 	  NXP i.MX processors.
@@ -539,7 +539,7 @@ config MV88E6XXX
 
 config MVGBE
 	bool "Marvell Orion5x/Kirkwood network interface support"
-	depends on ARCH_KIRKWOOD || ARCH_ORION5X
+	depends on ARCH_KIRKWOOD
 	select PHYLIB
 	help
 	  This driver supports the network interface units in the
@@ -1068,6 +1068,14 @@ config ASPEED_MDIO
 	help
 	  This driver supports the MDIO bus of Aspeed AST2600 SOC.  The driver
 	  currently supports Clause 22.
+
+config MDIO_MSCC_MIIM
+	bool "Microsemi MIIM interface support"
+	depends on DM_MDIO
+	select REGMAP
+	help
+		This driver supports MDIO interface found in Microsemi and Microchip
+		network switches.
 
 config MDIO_MUX_MMIOREG
 	bool "MDIO MUX accessed as a MMIO register access"

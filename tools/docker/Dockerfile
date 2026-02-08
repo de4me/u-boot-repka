@@ -60,6 +60,7 @@ RUN echo deb http://apt.llvm.org/noble/ llvm-toolchain-noble-20 main | tee /etc/
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y \
+	autoconf-archive \
 	automake \
 	autopoint \
 	bc \
@@ -155,7 +156,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Build GRUB UEFI targets for ARM & RISC-V, 32-bit and 64-bit
 RUN git clone https://https.git.savannah.gnu.org/git/grub.git /tmp/grub && \
 	cd /tmp/grub && \
-	git checkout grub-2.12 && \
+	git checkout grub-2.14 && \
 	git config --global user.name "GitLab CI Runner" && \
 	git config --global user.email trini@konsulko.com && \
 	GNULIB_URL=https://https.git.savannah.gnu.org/git/gnulib.git ./bootstrap && \
@@ -333,6 +334,22 @@ RUN wget -O - https://coreboot.org/releases/coreboot-25.03.tar.xz | tar -C /tmp 
     sudo mkdir /opt/coreboot && \
     sudo cp build/coreboot.rom build/cbfstool /opt/coreboot/ && \
     rm -rf /tmp/coreboot-25.03
+
+# Build ldr tool for Analog Devices boards and create prefixed symlinks to match
+# $(CROSS_COMPILE) as used by different supported platforms
+RUN git clone --depth=1 -b v1.0.2 https://github.com/analogdevicesinc/adsp-ldr.git /opt/adi-adsp-ldr && \
+	cd /opt/adi-adsp-ldr && \
+	python3 -m venv venv && \
+	. venv/bin/activate && \
+	pip install meson && \
+	meson setup build && \
+	cd build && \
+	meson compile && \
+	cd .. && \
+	ln -s build/ldr arm-linux-gnueabi-ldr && \
+	ln -s build/ldr aarch64-linux-ldr && \
+	deactivate
+ENV PATH="${PATH}:/opt/adi-adsp-ldr"
 
 # Create our user/group
 RUN echo uboot ALL=NOPASSWD: ALL > /etc/sudoers.d/uboot

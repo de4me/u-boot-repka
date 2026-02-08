@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0+
 
 VERSION = 2026
-PATCHLEVEL = 01
+PATCHLEVEL = 04
 SUBLEVEL =
-EXTRAVERSION =
+EXTRAVERSION = -rc1
 NAME =
 
 # *DOCUMENTATION*
@@ -1583,7 +1583,7 @@ binary_size_check: u-boot-nodtb.bin FORCE
 	map_size=$(shell cat u-boot.map | \
 		awk ' \
 			/_image_copy_start/ { start = $$1 } \
-			/_image_binary_end/ { end = $$1 } \
+			/_image_binary_end/ { end = $$1;exit } \
 			END { \
 				if (start != "" && end != "") \
 					print end " " start; \

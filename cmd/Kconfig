@@ -399,11 +399,11 @@ config BOOTM_LINUX
 	  or booti or bootz.
 
 config BOOTM_NETBSD
-	bool "Support booting NetBSD (non-EFI) loader images"
+	bool "Support booting NetBSD (legacy, non-EFI) loader images"
 	depends on CMD_BOOTM
-	default y
 	help
-	  Support booting NetBSD via the bootm command.
+	  Support booting NetBSD via the bootm command. This is for NetBSD
+	  images that are neither EFI nor using a device tree.
 
 config BOOTM_OPENRTOS
 	bool "Support booting OPENRTOS / FreeRTOS images"
@@ -620,7 +620,7 @@ config CMD_SPL
 	help
 	  Falcon mode allows booting directly from SPL into an Operating
 	  System such as Linux, thus skipping U-Boot proper. See
-	  doc/README.falcon for full information about how to use this
+	  doc/develop/falcon.rst for full information about how to use this
 	  command.
 
 config CMD_SPL_NAND_OFS
@@ -629,7 +629,7 @@ config CMD_SPL_NAND_OFS
 	default 0x0
 	help
 	  This provides the offset of the command line arguments for Linux
-	  when booting from NAND in Falcon mode.  See doc/README.falcon
+	  when booting from NAND in Falcon mode.  See doc/develop/falcon.rst
 	  for full information about how to use this option (and also see
 	  board/gateworks/gw_ventana/README for an example).
 
@@ -939,6 +939,14 @@ config CMD_MEMINFO_MAP
 	  detail about each piece of it.
 
 	  See doc/usage/cmd/meminfo.rst for more information.
+
+config CMD_MEMSIZE
+	bool "memsize"
+	default y if SANDBOX
+	depends on CMD_MEMINFO
+	help
+	  Get RAM via command for use in scripts. Print or assign decimal value
+	  in MiB to environment variable.
 
 config CMD_MEMORY
 	bool "md, mm, nm, mw, cp, cmp, base, loop"
@@ -1679,7 +1687,7 @@ config CMD_PINMUX
 	default y if PINCTRL
 	help
 	  Parse all available pin-controllers and show pins muxing. This
-	  is useful for debug purpoer to check the pin muxing and to know if
+	  is useful for debugging purposes to check the pin muxing and to know if
 	  a pin is configured as a GPIO or as an alternate function.
 
 config CMD_POWEROFF
@@ -2116,20 +2124,6 @@ config CMD_RARP
 	help
 	  Boot image via network using RARP/TFTP protocol
 
-config CMD_NFS
-	bool "nfs"
-	help
-	  Boot image via network using NFS protocol.
-
-config NFS_TIMEOUT
-	int "Timeout in milliseconds for NFS mounts"
-	depends on CMD_NFS
-	default 2000
-	help
-	  Timeout in milliseconds used in NFS protocol.  If you encounter
-	  "ERROR: Cannot umount" in nfs command, try longer timeout such as
-	  10000.
-
 config SYS_DISABLE_AUTOLOAD
 	bool "Disable automatically loading files over the network"
 	depends on CMD_BOOTP || CMD_DHCP || CMD_NFS || CMD_RARP
@@ -2223,6 +2217,20 @@ config CMD_MDIO
 	  If set, allows Enable 802.3(clause 45) MDIO interface registers access
 	  The MDIO interface is orthogonal to the MII interface and extends
 	  it by adding access to more registers through indirect addressing.
+
+config CMD_NFS
+	bool "nfs"
+	help
+	  Boot image via network using NFS protocol.
+
+config NFS_TIMEOUT
+	int "Timeout in milliseconds for NFS mounts"
+	depends on CMD_NFS
+	default 2000
+	help
+	  Timeout in milliseconds used in NFS protocol.  If you encounter
+	  "ERROR: Cannot umount" in nfs command, try longer timeout such as
+	  10000.
 
 config CMD_PING
 	bool "ping"

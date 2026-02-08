@@ -318,6 +318,7 @@ config TARGET_IMX8MN_VAR_SOM
 	select I2C_EEPROM
 	select DM_ETH_PHY
 	select NVMEM
+	imply OF_UPSTREAM
 
 config TARGET_KONTRON_PITX_IMX8M
 	bool "Support Kontron pITX-imx8m"
@@ -441,10 +442,10 @@ source "board/dhelectronics/dh_imx8mp/Kconfig"
 source "board/emcraft/imx8mp_navqp/Kconfig"
 source "board/engicam/imx8mm/Kconfig"
 source "board/engicam/imx8mp/Kconfig"
-source "board/freescale/imx8mq_evk/Kconfig"
-source "board/freescale/imx8mm_evk/Kconfig"
-source "board/freescale/imx8mn_evk/Kconfig"
-source "board/freescale/imx8mp_evk/Kconfig"
+source "board/nxp/imx8mq_evk/Kconfig"
+source "board/nxp/imx8mm_evk/Kconfig"
+source "board/nxp/imx8mn_evk/Kconfig"
+source "board/nxp/imx8mp_evk/Kconfig"
 source "board/gateworks/venice/Kconfig"
 source "board/google/imx8mq_phanbell/Kconfig"
 source "board/kontron/osm-s-mx8mp/Kconfig"

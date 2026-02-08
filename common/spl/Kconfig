@@ -1153,7 +1153,7 @@ config SPL_DM_SPI_FLASH
 
 config SPL_NET
 	bool "Support networking"
-	depends on !NET_LWIP
+	depends on NET
 	select SPL_USE_TINY_PRINTF_POINTER_SUPPORT if SPL_USE_TINY_PRINTF
 	help
 	  Enable support for network devices (such as Ethernet) in SPL.
@@ -1211,7 +1211,7 @@ config SPL_OS_BOOT
 	depends on ARM || MICROBLAZE || PPC
 	help
 	  Enable booting directly to an OS from SPL.
-	  for more info read doc/README.falcon
+	  for more info read doc/develop/falcon.rst
 
 config SPL_OS_BOOT_SECURE
 	bool "Allow Falcon Mode on secure devices"
@@ -1375,6 +1375,7 @@ config SPL_POWER_DOMAIN
 
 config SPL_RAM_SUPPORT
 	bool
+	select SPL_HAS_LOAD_FIT_ADDRESS if SPL_LOAD_FIT
 
 config SPL_RAM_DEVICE
 	bool "Support booting from preloaded image in RAM"
