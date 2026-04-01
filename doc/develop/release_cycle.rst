@@ -73,13 +73,13 @@ For the next scheduled release, release candidates were made on:
 
 * U-Boot |next_ver|-rc1 was released on Mon 26 January 2026.
 
-.. * U-Boot |next_ver|-rc2 was released on Mon 09 February 2026.
+* U-Boot |next_ver|-rc2 was released on Mon 09 February 2026.
 
-.. * U-Boot |next_ver|-rc3 was released on Mon 23 February 2026.
+* U-Boot |next_ver|-rc3 was released on Mon 23 February 2026.
 
-.. * U-Boot |next_ver|-rc4 was released on Mon 09 March 2026.
+* U-Boot |next_ver|-rc4 was released on Mon 09 March 2026.
 
-.. * U-Boot |next_ver|-rc5 was released on Mon 23 March 2026.
+* U-Boot |next_ver|-rc5 was released on Mon 23 March 2026.
 
 Please note that the following dates are planned only and may be deviated from
 as needed.

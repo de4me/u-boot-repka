@@ -626,15 +626,12 @@ S:	Supported
 F:	arch/arm/dts/am335x-sancloud*
 
 ARM SC5XX
-M:	Nathan Barrett-Morrison <nathan.morrison@timesys.com>
 M:	Greg Malysa <malysagreg@gmail.com>
-M:	Ian Roberts <ian.roberts@timesys.com>
 M:	Vasileios Bimpikas <vasileios.bimpikas@analog.com>
-M:	Utsav Agarwal <utsav.agarwal@analog.com>
 M:	Arturs Artamonovs <arturs.artamonovs@analog.com>
-L:	adsp-linux@analog.com
+L:	linux@analog.com
 S:	Supported
-T:	git https://github.com/analogdevicesinc/lnxdsp-u-boot
+T:	git https://github.com/analogdevicesinc/u-boot
 F:	arch/arm/dts/sc5*
 F:	arch/arm/include/asm/arch-adi/
 F:	arch/arm/mach-sc5xx/
@@ -751,7 +748,6 @@ N:	stm
 N:	stm32
 
 ARM SUNXI
-M:	Jagan Teki <jagan@amarulasolutions.com>
 M:	Andre Przywara <andre.przywara@arm.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-sunxi.git
@@ -1147,8 +1143,7 @@ F:	tools/file2include.c
 F:	tools/mkeficapsule.c
 
 ENVIRONMENT
-M:	Joe Hershberger <joe.hershberger@ni.com>
-S:	Maintained
+S:	Orphaned
 F:	env/
 F:	include/env/
 F:	include/env*
@@ -1299,12 +1294,6 @@ T:	git https://source.denx.de/u-boot/custodians/u-boot-marvell.git
 F:	doc/README.kwbimage
 F:	doc/kwboot.1
 F:	tools/kwb*
-
-LED
-M:	Ivan Vozvakhov <i.vozvakhov@vk.team>
-S:	Supported
-F:	doc/device-tree-bindings/leds/leds-pwm.txt
-F:	drivers/led/led_pwm.c
 
 LOGGING
 M:	Simon Glass <sjg@chromium.org>
@@ -1462,8 +1451,6 @@ F:	drivers/mmc/
 N:	mmc
 
 NETWORK
-M:	Joe Hershberger <joe.hershberger@ni.com>
-M:	Ramon Fried <rfried.dev@gmail.com>
 M:	Jerome Forissier <jerome.forissier@arm.com>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-net.git
@@ -1549,8 +1536,7 @@ F:	drivers/pci/pcie_dw_imx.c
 F:	drivers/phy/phy-imx8m-pcie.c
 
 PCI Endpoint
-M:	Ramon Fried <rfried.dev@gmail.com>
-S:	Maintained
+S:	Orphaned
 F:	drivers/pci_endpoint/
 F:  include/pci_ep.h
 
@@ -1606,6 +1592,11 @@ M:	Marek Behún <kabel@kernel.org>
 S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-mpc85xx.git
 F:	arch/powerpc/cpu/mpc85xx/
+
+PWM LED
+S:	Orphan
+F:	doc/device-tree-bindings/leds/leds-pwm.txt
+F:	drivers/led/led_pwm.c
 
 QEMU VIRTUAL SYSTEM CONTROLLER
 M:	Kuan-Wei Chiu <visitorckw@gmail.com>
@@ -1747,8 +1738,7 @@ S:	Maintained
 F:	drivers/rng/smccc_trng.c
 
 SPI
-M:	Jagan Teki <jagan@amarulasolutions.com>
-S:	Maintained
+S:	Orphaned
 T:	git https://source.denx.de/u-boot/custodians/u-boot-spi.git
 F:	drivers/spi/
 F:	include/spi*
@@ -1762,9 +1752,8 @@ T:	git https://source.denx.de/u-boot/custodians/u-boot-nand-flash.git
 F:	drivers/mtd/nand/spi/
 
 SPI-NOR
-M:	Jagan Teki <jagan@amarulasolutions.com>
 M:	Vignesh R <vigneshr@ti.com>
-R:	Tudor Ambarus <tudor.ambarus@linaro.org>
+R:	Takahiro Kuwano <takahiro.kuwano@infineon.com>
 S:	Maintained
 F:	drivers/mtd/spi/
 F:	include/spi_flash.h
