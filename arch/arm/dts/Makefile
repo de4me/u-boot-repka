@@ -685,7 +685,8 @@ dtb-$(CONFIG_MACH_SUN50I_H5) += \
 	sun50i-h5-repka-pi3-overlay-spi0.dtbo \
 	sun50i-h5-repka-pi3-overlay-spi0_can.dtbo \
 	sun50i-h5-repka-pi3-overlay-spi1.dtbo \
-	sun50i-h5-repka-pi3-overlay-uart2.dtbo
+	sun50i-h5-repka-pi3-overlay-uart2.dtbo \
+	sun50i-h5-repka-pi3-overlay-leds_status-disabled.dtbo
 dtb-$(CONFIG_MACH_SUN50I_H6) += \
 	sun50i-h6-beelink-gs1.dtb \
 	sun50i-h6-orangepi-3.dtb \

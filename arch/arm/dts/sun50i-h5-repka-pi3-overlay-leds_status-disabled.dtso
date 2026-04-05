@@ -1,0 +1,6 @@
+/dts-v1/;
+/plugin/;
+
+&leds_status {
+	status = "disabled";
+};
