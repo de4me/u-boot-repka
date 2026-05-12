@@ -102,8 +102,7 @@ config EFI_SET_TIME
 	  can be used by an EFI application to adjust the real time clock.
 
 config EFI_HAVE_RUNTIME_RESET
-	# bool "Reset runtime service is available"
-	bool
+	bool "Reset runtime service"
 	default y
 	depends on ARCH_BCM283X || FSL_LAYERSCAPE || PSCI_RESET || \
 		   SANDBOX || SYSRESET_SBI || SYSRESET_X86
@@ -517,7 +516,7 @@ config EFI_RISCV_BOOT_PROTOCOL
 config EFI_IP4_CONFIG2_PROTOCOL
 	bool "EFI_IP4_CONFIG2_PROTOCOL support"
 	default y if ARCH_QEMU || SANDBOX
-	depends on NET || NET_LWIP
+	depends on NET
 	help
 	  Provides an implementation of the EFI_IP4_CONFIG2_PROTOCOL, this
 	  protocol can be used to set and get the current ip address and
@@ -610,7 +609,8 @@ config EFI_BOOTMGR
 
 config EFI_HTTP_BOOT
 	bool "EFI HTTP Boot support"
-	depends on NET || NET_LWIP
+	depends on NET
+	depends on CMDLINE
 	select CMD_NET
 	select CMD_DHCP
 	select CMD_DNS
