@@ -32,13 +32,6 @@ dtb-$(CONFIG_TARGET_A5Y17LTE) += exynos78x0-axy17lte.dtb
 dtb-$(CONFIG_TARGET_A3Y17LTE) += exynos78x0-axy17lte.dtb
 dtb-$(CONFIG_TARGET_A7Y17LTE) += exynos78x0-axy17lte.dtb
 
-dtb-$(CONFIG_ARCH_APPLE) += \
-	t8103-j274.dtb \
-	t8103-j293.dtb \
-	t8103-j313.dtb \
-	t8103-j456.dtb \
-	t8103-j457.dtb
-
 dtb-$(CONFIG_ARCH_DAVINCI) += \
 	da850-lcdk.dtb \
 	da850-lego-ev3.dtb
@@ -51,12 +44,6 @@ dtb-$(CONFIG_MACH_S900) += \
 	bubblegum_96.dtb
 dtb-$(CONFIG_MACH_S700) += \
 	s700-cubieboard7.dtb
-
-dtb-$(CONFIG_ROCKCHIP_RK3128) += \
-	rk3128-evb.dtb
-
-dtb-$(CONFIG_ROCKCHIP_RK322X) += \
-	rk3229-evb.dtb
 
 dtb-$(CONFIG_ROCKCHIP_RK3368) += \
 	rk3368-sheep.dtb \
@@ -929,12 +916,11 @@ dtb-$(CONFIG_RZA1) += \
 	r7s72100-genmai.dtb \
 	r7s72100-gr-peach.dtb
 
-dtb-$(CONFIG_RCAR_GEN5) += \
-	r8a78000-ironhide.dtb
+dtb-$(CONFIG_RCAR_GEN3) += \
+	r8a779md-geist.dtb
 
-ifdef CONFIG_RCAR_GEN5
-DTC_FLAGS += -R 4 -p 0x1000
-endif
+dtb-$(CONFIG_RCAR_GEN5) += \
+	r8a78000-ironhide-cm33.dtb
 
 dtb-$(CONFIG_TARGET_AT91SAM9261EK) += at91sam9261ek.dtb
 
